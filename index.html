@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1b5e20">
+<title>Gestão de Capoeira</title>
+<style>
+    :root {
+        --primary: #1b5e20;
+        --primary-light: #e8f5e9;
+        --secondary: #ff8f00;
+        --bg: #f4f7f6;
+        --surface: #ffffff;
+        --text: #263238;
+        --text-muted: #607d8b;
+        --danger: #d32f2f;
+        --border: #cfd8dc;
+        --radius: 12px;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        font-size: 16px;
+        line-height: 1.5;
+        padding-bottom: 80px;
+    }
+
+    .container { max-width: 800px; margin: 0 auto; padding: 16px; }
+
+    header {
+        background-color: var(--primary);
+        color: white;
+        padding: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    header h1 { margin: 0; font-size: 20px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+
+    .view { display: none; animation: fadeIn 0.3s ease; }
+    .view.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    button {
+        font-family: inherit;
+        font-size: 16px;
+        font-weight: 600;
+        padding: 14px 20px;
+        border: none;
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: opacity 0.2s, transform 0.1s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    button:active { transform: scale(0.98); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary { background-color: var(--primary); color: white; width: 100%; }
+    .btn-secondary { background-color: var(--secondary); color: white; width: 100%; }
+    .btn-outline { background-color: transparent; border: 2px solid var(--primary); color: var(--primary); }
+    .btn-danger { background-color: var(--danger); color: white; }
+    .btn-sm { padding: 8px 12px; font-size: 14px; border-radius: 8px; }
+    .btn-icon { padding: 10px; border-radius: 50%; background: rgba(255,255,255,0.2); color: white; }
+
+    .card {
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 16px;
+        box-shadow: var(--shadow);
+    }
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 8px;
+    }
+    .card-title { font-size: 18px; font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+    
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--text-muted); }
+    input[type="text"], input[type="number"], input[type="date"], input[type="password"], select, textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 16px;
+        font-family: inherit;
+        background-color: #fff;
+        color: var(--text);
+    }
+    input:focus, select:focus, textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px var(--primary-light);
+    }
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .input-row-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; }
+    
+    .status-toggle {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        color: var(--text-muted);
+        margin-top: 8px;
+        cursor: pointer;
+    }
+    .status-toggle input { width: auto; margin-right: 8px; transform: scale(1.2); }
+
+    .dynamic-list { margin-bottom: 12px; }
+    .dynamic-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #f4f7f6;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        border-left: 4px solid var(--primary);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .dynamic-item-info { font-size: 15px; color: #1a1a1a !important; }
+    .dynamic-item-info strong { display: block; font-size: 16px; color: #1b5e20 !important; margin-bottom: 2px; }
+
+    .preview-box {
+        background: #fff;
+        border: 1px dashed var(--primary);
+        padding: 16px;
+        border-radius: var(--radius);
+        font-family: monospace;
+        font-size: 14px;
+        white-space: pre-wrap;
+        margin-bottom: 16px;
+        color: #333;
+    }
+
+    .text-danger { color: var(--danger); font-size: 12px; margin-top: 4px; display: block; }
+    .text-muted { color: var(--text-muted); font-size: 14px; }
+    .hidden { display: none !important; }
+    .mt-2 { margin-top: 8px; }
+    .mt-4 { margin-top: 16px; }
+    .mb-2 { margin-bottom: 8px; }
+    .flex-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+    .menu-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .menu-btn {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        padding: 20px;
+        border-radius: var(--radius);
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 18px;
+        color: var(--text);
+        box-shadow: var(--shadow);
+        width: 100%;
+    }
+    .menu-btn .icon { font-size: 28px; }
+    
+    .history-item {
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 12px;
+        box-shadow: var(--shadow);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .history-info { flex: 1; }
+    .history-info h4 { margin: 0 0 4px 0; font-size: 16px; }
+
+    .alert-box {
+        background-color: #ffebee;
+        border-left: 4px solid var(--danger);
+        padding: 16px;
+        border-radius: var(--radius);
+        margin-bottom: 16px;
+    }
+    .alert-box h4 { margin: 0 0 8px 0; color: var(--danger); }
+    .alert-box p { margin: 0; font-size: 14px; }
+
+    #view-auth {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg);
+        z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+    }
+    #view-auth.active { display: flex !important; }
+    .pin-dots { display: flex; gap: 16px; justify-content: center; margin: 24px 0; }
+    .pin-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--primary); background: transparent; }
+    .pin-dot.filled { background: var(--primary); }
+    .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; max-width: 300px; }
+    .keypad button { font-size: 24px; padding: 20px; background: #fff; color: var(--text); border-radius: 50%; box-shadow: var(--shadow); }
+    .keypad button:active { background: var(--primary-light); }
+    
+    #toast {
+        position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+        background: #333; color: #fff; padding: 12px 24px; border-radius: 30px; font-size: 15px; font-weight: bold;
+        transition: transform 0.3s ease; z-index: 2000; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.error { background: var(--danger); }
+</style>
+</head>
+<body>
+
+<header>
+    <h1><span>🐔</span> Gestão Capoeira</h1>
+    <button class="btn-icon hidden" id="btnHome" onclick="navTo('dashboard')">🏠</button>
+</header>
+
+<div class="container">
+
+    <div id="view-auth" class="view">
+        <h2 id="pin-title" style="color:var(--primary); margin-bottom: 4px;">Bem-vindo</h2>
+        <p id="pin-subtitle" class="text-muted">Introduza o seu PIN</p>
+        <div class="pin-dots" id="auth-dots"></div>
+        <div class="keypad" id="auth-keypad"></div>
+        <div style="text-align: center; margin-top: 30px;">
+            <button id="btnCriarConta" class="text-muted" style="background:none; border:none; font-size:15px; text-decoration:underline; cursor:pointer;" onclick="ativarModoSetup()">Criar conta (Definir PIN)</button>
+        </div>
+    </div>
+
+    <div id="view-dashboard" class="view">
+        <div class="card">
+            <h2 style="margin-top:0; color:var(--primary);">Bem-vindo</h2>
+            <p class="text-muted">Faça o registo diário dos consumos e mortalidade.</p>
+        </div>
+        <div id="alerta-vacinas"></div>
+        <div class="menu-grid">
+            <button class="menu-btn" onclick="startNewReport()">
+                <span class="icon">📝</span>
+                <div>
+                    <strong style="display:block; font-size: 18px;">Novo Registo</strong>
+                    <span class="text-muted" style="font-size:13px;">Iniciar o preenchimento de hoje</span>
+                </div>
+            </button>
+            <button class="menu-btn" onclick="navTo('history')">
+                <span class="icon">📚</span>
+                <div>
+                    <strong style="display:block; font-size: 18px;">Histórico</strong>
+                    <span class="text-muted" style="font-size:13px;">Consultar registos anteriores</span>
+                </div>
+            </button>
+            <button class="menu-btn" onclick="navTo('schedule')">
+                <span class="icon">💉</span>
+                <div>
+                    <strong style="display:block; font-size: 18px;">Agendar Vacina</strong>
+                    <span class="text-muted" style="font-size:13px;">Programar alertas</span>
+                </div>
+            </button>
+            <button class="menu-btn" onclick="navTo('settings')">
+                <span class="icon">⚙️</span>
+                <div>
+                    <strong style="display:block; font-size: 18px;">Definições e Backup</strong>
+                    <span class="text-muted" style="font-size:13px;">Sair ou exportar dados</span>
+                </div>
+            </button>
+        </div>
+    </div>
+
+    <div id="view-form" class="view">
+        <div class="flex-row" style="justify-content: space-between; margin-bottom: 16px;">
+            <h2 style="margin:0; color:var(--primary);">Registo Diário</h2>
+            <button class="btn-sm btn-outline" onclick="navTo('dashboard')">Cancelar</button>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><div class="card-title">📋 Identificação</div></div>
+            <div class="input-row">
+                <div class="form-group">
+                    <label>Data</label>
+                    <input type="date" id="inDate" onchange="autoSaveDraft()">
+                </div>
+                <div class="form-group">
+                    <label>Lote</label>
+                    <input type="text" id="inLote" placeholder="Ex: Outubro" oninput="autoSaveDraft()">
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="form-group">
+                    <label>Trabalhador</label>
+                    <input type="text" id="inWorker" placeholder="Seu nome" oninput="autoSaveDraft()">
+                </div>
+                <div class="form-group">
+                    <label>Capoeira / Galpão</label>
+                    <input type="text" id="inCapoeira" placeholder="Ex: Galpão A" oninput="autoSaveDraft()">
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><div class="card-title">🌾 Ração</div></div>
+            <div id="racao-fields">
+                <div class="input-row-3">
+                    <div class="form-group">
+                        <label>Quantidade</label>
+                        <input type="text" id="inRacaoQty" inputmode="decimal" placeholder="0" oninput="calcRacao()">
+                    </div>
+                    <div class="form-group">
+                        <label>Unidade</label>
+                        <select id="inRacaoUnit" onchange="toggleRacaoSaco()">
+                            <option value="kg">kg</option>
+                            <option value="sacos">sacos</option>
+                        </select>
+                    </div>
+                    <div class="form-group hidden" id="racaoSacoWeightDiv">
+                        <label>Peso/saco (kg)</label>
+                        <input type="text" id="inRacaoWeight" inputmode="decimal" placeholder="Ex: 50" oninput="calcRacao()">
+                    </div>
+                </div>
+                <div class="text-muted" id="racaoTotalInfo" style="margin-bottom: 8px;"></div>
+            </div>
+            <label class="status-toggle">
+                <input type="checkbox" id="chkRacaoNaoUsado" onchange="toggleNotUsed('racao')"> Não foi utilizada hoje
+            </label>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><div class="card-title">💀 Mortalidade</div></div>
+            <div id="morte-fields">
+                <div class="form-group">
+                    <label>Nº de frangos mortos</label>
+                    <input type="number" id="inMorteQty" min="0" step="1" placeholder="0" oninput="validateInt(this); autoSaveDraft()">
+                </div>
+                <div class="form-group">
+                    <label>Observação (opcional)</label>
+                    <input type="text" id="inMorteObs" placeholder="Ex: causas desconhecidas" oninput="autoSaveDraft()">
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><div class="card-title">💰 Vendas de Frangos</div></div>
+            <label class="status-toggle mb-2">
+                <input type="checkbox" id="chkVendasAtivo" onchange="toggleVendas()"> Ativar vendas hoje
+            </label>
+            <div id="vendas-fields" class="hidden">
+                <div class="input-row">
+                    <div class="form-group">
+                        <label>Cliente</label>
+                        <input type="text" id="inVendaCliente" list="dlClientes" placeholder="Nome do cliente" oninput="autoSaveDraft()">
+                        <datalist id="dlClientes"></datalist>
+                    </div>
+                    <div class="form-group">
+                        <label>Qtd (aves)</label>
+                        <input type="number" id="inVendaQty" min="0" step="1" placeholder="0" oninput="validateInt(this); autoSaveDraft()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MEDICAMENTOS SIMPLIFICADO SEM BOTÃO -->
+        <div class="card">
+            <div class="card-header"><div class="card-title">💊 Medicamentos</div></div>
+            <div class="dynamic-list" id="list-meds"></div>
+            <div class="input-row-3" id="add-med-form">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Medicamento</label>
+                    <input type="text" id="inMedProd" list="dlMedProd" placeholder="Nome do medicamento" oninput="autoSaveDraft()">
+                    <datalist id="dlMedProd"></datalist>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Qtd</label>
+                    <input type="text" id="inMedQty" inputmode="decimal" placeholder="0" oninput="autoSaveDraft()">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Unid.</label>
+                    <select id="selMedUnit" onchange="autoSaveDraft()">
+                        <option value="kg">kg</option>
+                        <option value="L">L</option>
+                        <option value="pacote">pacote</option>
+                    </select>
+                </div>
+            </div>
+            <label class="status-toggle mt-2">
+                <input type="checkbox" id="chkMedNaoUsado" onchange="toggleNotUsed('med')"> Não foi utilizado hoje
+            </label>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><div class="card-title">💧 Água</div></div>
+            <div class="form-group" id="agua-fields">
+                <label>Quantidade utilizada (Litros)</label>
+                <input type="text" id="inAguaQty" inputmode="decimal" placeholder="0" oninput="autoSaveDraft()">
+            </div>
+            <label class="status-toggle">
+                <input type="checkbox" id="chkAguaNaoUsado" onchange="toggleNotUsed('agua')"> Não foi utilizada hoje
+            </label>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><div class="card-title">🪵 Serradura</div></div>
+            <div class="input-row" id="serradura-fields">
+                <div class="form-group">
+                    <label>Quantidade</label>
+                    <input type="text" id="inSerrQty" inputmode="decimal" placeholder="0" oninput="autoSaveDraft()">
+                </div>
+                <div class="form-group">
+                    <label>Unidade</label>
+                    <select id="inSerrUnit" onchange="autoSaveDraft()">
+                        <option value="sacos">sacos</option>
+                    </select>
+                </div>
+            </div>
+            <label class="status-toggle">
+                <input type="checkbox" id="chkSerrNaoUsado" onchange="toggleNotUsed('serradura')"> Não foi utilizada hoje
+            </label>
+        </div>
+
+        <!-- VACINAS SIMPLIFICADO SEM BOTÃO -->
+        <div class="card">
+            <div class="card-header"><div class="card-title">💉 Vacinas</div></div>
+            <div class="dynamic-list" id="list-vacinas"></div>
+            <div class="input-row" id="add-vac-form">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Vacina</label>
+                    <input type="text" id="inVacProd" list="dlVacProd" placeholder="Nome da vacina" oninput="autoSaveDraft()">
+                    <datalist id="dlVacProd"></datalist>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Qtd</label>
+                    <input type="text" id="inVacQty" inputmode="decimal" placeholder="0" oninput="autoSaveDraft()">
+                </div>
+            </div>
+            <div class="input-row mt-2" id="add-vac-form-2">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Unidade</label>
+                    <select id="selVacUnit" onchange="autoSaveDraft()">
+                        <option value="doses">doses</option>
+                    </select>
+                </div>
+            </div>
+            <label class="status-toggle mt-2">
+                <input type="checkbox" id="chkVacNaoUsado" onchange="toggleNotUsed('vac')"> Não foram utilizadas hoje
+            </label>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><div class="card-title">🔥 Carvão</div></div>
+            <div class="input-row" id="carvao-fields">
+                <div class="form-group">
+                    <label>Quantidade</label>
+                    <input type="text" id="inCarvQty" inputmode="decimal" placeholder="0" oninput="autoSaveDraft()">
+                </div>
+                <div class="form-group">
+                    <label>Unidade</label>
+                    <select id="inCarvUnit" onchange="autoSaveDraft()">
+                        <option value="sacos">sacos</option>
+                    </select>
+                </div>
+            </div>
+            <label class="status-toggle">
+                <input type="checkbox" id="chkCarvNaoUsado" onchange="toggleNotUsed('carvao')"> Não foi utilizado hoje
+            </label>
+        </div>
+
+        <div class="card">
+            <div class="form-group">
+                <label>Observações Gerais</label>
+                <textarea id="inObsGeral" rows="3" placeholder="Alguma nota sobre o dia de hoje..." oninput="autoSaveDraft()"></textarea>
+            </div>
+            <button type="button" class="btn-primary" onclick="previewReport()">Pré-visualizar Relatório</button>
+        </div>
+    </div>
+
+    <div id="view-preview" class="view">
+        <div class="flex-row" style="justify-content: space-between; margin-bottom: 16px;">
+            <h2 style="margin:0; color:var(--primary);">Relatório</h2>
+            <button class="btn-sm btn-outline" onclick="navTo('form')">✏️ Editar</button>
+        </div>
+        
+        <div id="preview-alerts"></div>
+        <div class="preview-box" id="report-text"></div>
+        
+        <div class="flex-row mt-4">
+            <button class="btn-primary" style="flex:1;" onclick="copyReport()">📋 Copiar Texto</button>
+            <button class="btn-secondary" style="flex:1;" onclick="shareReport()">📤 Partilhar</button>
+        </div>
+        <button class="btn-outline mt-2" style="width:100%;" onclick="saveReportToHistory()">💾 Guardar e Concluir</button>
+    </div>
+
+    <div id="view-history" class="view">
+        <div class="flex-row" style="justify-content: space-between; margin-bottom: 16px;">
+            <h2 style="margin:0; color:var(--primary);">Histórico</h2>
+            <button class="btn-sm btn-outline" onclick="navTo('dashboard')">Voltar</button>
+        </div>
+        
+        <div class="card mb-2">
+            <div class="input-row">
+                <div class="form-group" style="margin:0;">
+                    <label>Filtrar Data</label>
+                    <input type="date" id="filterDate" onchange="renderHistory()">
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label>Filtrar Lote</label>
+                    <input type="text" id="filterLote" placeholder="Lote..." oninput="renderHistory()">
+                </div>
+            </div>
+        </div>
+        
+        <div id="history-list"></div>
+    </div>
+
+    <div id="view-schedule" class="view">
+        <div class="flex-row" style="justify-content: space-between; margin-bottom: 16px;">
+            <h2 style="margin:0; color:var(--primary);">Agendar Vacinas</h2>
+            <button class="btn-sm btn-outline" onclick="navTo('dashboard')">Voltar</button>
+        </div>
+
+        <div class="card">
+            <p class="text-muted mb-2">O sistema avisa 2 dias antes da data agendada.</p>
+            <div class="input-row">
+                <div class="form-group">
+                    <label>Data Prevista</label>
+                    <input type="date" id="inVacData">
+                </div>
+                <div class="form-group">
+                    <label>Lote</label>
+                    <input type="text" id="inVacLote" placeholder="Lote alvo">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Tipo de Vacina</label>
+                <input type="text" id="inVacTipo" list="dlVacProd" placeholder="Escreva o nome da vacina...">
+            </div>
+            <button class="btn-primary" onclick="addVacinaAgendada()">Agendar Vacina</button>
+        </div>
+
+        <h3>Vacinas Agendadas</h3>
+        <div id="list-agendadas"></div>
+    </div>
+
+    <div id="view-settings" class="view">
+        <div class="flex-row" style="justify-content: space-between; margin-bottom: 16px;">
+            <h2 style="margin:0; color:var(--primary);">Definições</h2>
+            <button class="btn-sm btn-outline" onclick="navTo('dashboard')">Voltar</button>
+        </div>
+        
+        <div class="card">
+            <h3>Segurança</h3>
+            <button class="btn-outline mt-2" style="width:100%;" onclick="logout()">🔒 Terminar Sessão</button>
+        </div>
+
+        <div class="card">
+            <h3>Backup de Dados</h3>
+            <button class="btn-primary mt-2" onclick="exportData()">📥 Exportar Backup</button>
+            <div class="mt-4" style="border-top: 1px solid var(--border); padding-top: 16px;">
+                <label style="font-weight:bold; margin-bottom:8px; display:block;">Importar Backup</label>
+                <input type="file" id="importFile" accept=".json" style="margin-bottom: 12px; font-size: 14px;">
+                <button class="btn-secondary" onclick="importData()">📤 Importar</button>
+            </div>
+        </div>
+
+        <div class="card" style="border: 1px solid var(--danger);">
+            <h3 class="text-danger">Zona de Perigo</h3>
+            <button class="btn-danger mt-2" onclick="clearAllData()">🗑️ Apagar Tudo</button>
+        </div>
+    </div>
+
+</div>
+
+<div id="toast">Mensagem</div>
+
+<script>
+let state = {
+    view: 'dashboard',
+    currentReport: null,
+    history: [],
+    customMeds: [],
+    customVacs: [],
+    customClients: [],
+    defaultWorker: '',
+    defaultCapoeira: '',
+    defaultLote: '',
+    pin: '',
+    alertasVacinas: []
+};
+
+let currentPinMode = 'login';
+let tempPin = '';
+let isLoadingForm = false;
+
+function init() {
+    loadFromStorage();
+    setupKeypad();
+    populateDatalists();
+    setupListeners();
+    
+    if (!state.pin) {
+        currentPinMode = 'setup';
+    } else {
+        currentPinMode = 'login';
+    }
+    updateAuthUI();
+    navTo('auth');
+}
+
+function loadFromStorage() {
+    try {
+        const saved = localStorage.getItem('capoeira_app_data');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            state.history = parsed.history || [];
+            state.customMeds = parsed.customMeds || [];
+            state.customVacs = parsed.customVacs || [];
+            state.customClients = parsed.customClients || [];
+            state.defaultWorker = parsed.defaultWorker || '';
+            state.defaultCapoeira = parsed.defaultCapoeira || '';
+            state.defaultLote = parsed.defaultLote || '';
+            state.pin = parsed.pin || '';
+            state.alertasVacinas = parsed.alertasVacinas || [];
+        }
+    } catch (e) {}
+}
+
+function saveToStorage() {
+    try {
+        localStorage.setItem('capoeira_app_data', JSON.stringify(state));
+    } catch (e) {
+        showToast('Erro de armazenamento.', true);
+    }
+}
+
+function navTo(viewId) {
+    document.querySelectorAll('.view').forEach(v => {
+        v.classList.remove('active');
+        v.style.display = 'none';
+    });
+    
+    const target = document.getElementById('view-' + viewId);
+    if (target) {
+        target.classList.add('active');
+        target.style.display = (viewId === 'auth') ? 'flex' : 'block';
+    }
+    
+    state.view = viewId;
+    
+    if (viewId === 'dashboard' || viewId === 'auth') {
+        document.getElementById('btnHome').classList.add('hidden');
+    } else {
+        document.getElementById('btnHome').classList.remove('hidden');
+    }
+
+    if (viewId === 'history') renderHistory();
+    if (viewId === 'dashboard') {
+        checkAlertas();
+        populateDatalists();
+    }
+    if (viewId === 'schedule') renderAgendadas();
+    
+    if (viewId === 'form' && state.currentReport) {
+        fillForm();
+    }
+
+    if (viewId !== 'auth') window.scrollTo(0, 0);
+}
+
+// ================= SISTEMA DE PIN =================
+function setupKeypad() {
+    const container = document.getElementById('auth-keypad');
+    if(!container) return;
+    container.innerHTML = '';
+    const nums = [1,2,3,4,5,6,7,8,9,'C',0,'OK'];
+    nums.forEach(n => {
+        const btn = document.createElement('button');
+        btn.textContent = n;
+        btn.onclick = () => handlePinInput(n);
+        container.appendChild(btn);
+    });
+}
+
+function updateAuthUI() {
+    const title = document.getElementById('pin-title');
+    const sub = document.getElementById('pin-subtitle');
+    const btn = document.getElementById('btnCriarConta');
+    const dots = document.getElementById('auth-dots');
+    
+    if(!dots) return;
+    dots.innerHTML = '';
+    for(let i=0; i<4; i++) {
+        const d = document.createElement('div');
+        d.className = 'pin-dot';
+        dots.appendChild(d);
+    }
+    tempPin = '';
+
+    if (currentPinMode === 'setup') {
+        title.textContent = "Criar PIN";
+        sub.textContent = "Defina um PIN de 4 dígitos para segurança";
+        btn.classList.add('hidden');
+    } else {
+        title.textContent = "Bem-vindo de volta";
+        sub.textContent = "Introduza o seu PIN";
+        btn.classList.remove('hidden');
+    }
+}
+
+function ativarModoSetup() {
+    currentPinMode = 'setup';
+    updateAuthUI();
+}
+
+function handlePinInput(num) {
+    const dots = document.getElementById('auth-dots');
+    if(!dots) return;
+    
+    if (num === 'C') {
+        tempPin = '';
+    } else if (num === 'OK') {
+        if (tempPin.length !== 4) return showToast('O PIN deve ter 4 dígitos', true);
+        
+        if (currentPinMode === 'setup') {
+            state.pin = tempPin;
+            saveToStorage();
+            showToast('PIN criado com sucesso!');
+            navTo('dashboard');
+        } else {
+            if (tempPin === state.pin) {
+                navTo('dashboard');
+            } else {
+                showToast('PIN incorreto. Tente novamente.', true);
+                tempPin = '';
+            }
+        }
+    } else {
+        if (tempPin.length < 4) tempPin += num;
+    }
+
+    for (let i = 0; i < 4; i++) {
+        if (dots.children[i]) {
+            dots.children[i].className = 'pin-dot' + (i < tempPin.length ? ' filled' : '');
+        }
+    }
+}
+
+function logout() {
+    tempPin = '';
+    updateAuthUI();
+    navTo('auth');
+}
+
+// ================= ALERTAS =================
+function checkAlertas() {
+    const alertBox = document.getElementById('alerta-vacinas');
+    if(!alertBox) return;
+    alertBox.innerHTML = '';
+    
+    if (!state.alertasVacinas || state.alertasVacinas.length === 0) return;
+
+    const hoje = new Date();
+    hoje.setHours(0,0,0,0);
+
+    let alertasAtivos = [];
+
+    state.alertasVacinas.forEach(a => {
+        const dataVac = new Date(a.data + 'T00:00:00');
+        const diffTime = dataVac - hoje;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays >= 0 && diffDays <= 2) {
+            alertasAtivos.push(`<p><strong>${a.tipo}</strong> (Lote ${a.lote}) - Faltam <strong>${diffDays} dias</strong>!</p>`);
+        }
+    });
+
+    if (alertasAtivos.length > 0) {
+        alertBox.innerHTML = `
+            <div class="alert-box">
+                <h4>⚠️ Alerta de Vacinação!</h4>
+                ${alertasAtivos.join('')}
+            </div>
+        `;
+    }
+}
+
+function addVacinaAgendada() {
+    const data = document.getElementById('inVacData').value;
+    const lote = document.getElementById('inVacLote').value.trim();
+    const tipo = document.getElementById('inVacTipo').value.trim();
+
+    if (!data || !lote || !tipo) return showToast('Preencha a data, lote e tipo.', true);
+
+    state.alertasVacinas.push({ id: Date.now(), data, lote, tipo });
+    
+    if (!state.customVacs.includes(tipo)) {
+        state.customVacs.push(tipo);
+    }
+
+    saveToStorage();
+    document.getElementById('inVacLote').value = '';
+    document.getElementById('inVacTipo').value = '';
+    populateDatalists();
+    renderAgendadas();
+    showToast('Vacina agendada!');
+}
+
+function renderAgendadas() {
+    const list = document.getElementById('list-agendadas');
+    if(!list) return;
+    
+    if (!state.alertasVacinas || state.alertasVacinas.length === 0) {
+        list.innerHTML = '<p class="text-muted">Nenhuma vacina agendada.</p>';
+        return;
+    }
+
+    state.alertasVacinas.sort((a,b) => new Date(a.data) - new Date(b.data));
+
+    list.innerHTML = state.alertasVacinas.map(a => `
+        <div class="history-item">
+            <div class="history-info">
+                <h4>${formatDate(a.data)} - ${a.tipo}</h4>
+                <div class="text-muted">Lote: ${a.lote}</div>
+            </div>
+            <button class="btn-sm btn-danger" onclick="deleteAgendada(${a.id})">🗑️</button>
+        </div>
+    `).join('');
+}
+
+function deleteAgendada(id) {
+    if (confirm('Apagar este agendamento?')) {
+        state.alertasVacinas = state.alertasVacinas.filter(a => a.id !== id);
+        saveToStorage();
+        renderAgendadas();
+    }
+}
+
+// ================= FORMULÁRIO =================
+function startNewReport() {
+    const today = new Date().toISOString().split('T')[0];
+    
+    let newReport = {
+        id: 'rep_' + Date.now(),
+        date: today,
+        worker: state.defaultWorker,
+        capoeira: state.defaultCapoeira,
+        lote: state.defaultLote, 
+        racao: { notUsed: false, qty: '', unit: 'kg', weight: '' },
+        morte: { qty: '', obs: '' },
+        vendas: { ativo: false, cliente: '', qty: '' },
+        meds: { notUsed: false, items: [] },
+        agua: { notUsed: false, qty: '' },
+        serradura: { notUsed: false, qty: '', unit: 'sacos' },
+        vacinas: { notUsed: false, items: [] },
+        carvao: { notUsed: false, qty: '', unit: 'sacos' },
+        obsGeral: '',
+        tempMed: { prod: '', qty: '', unit: 'kg' },
+        tempVac: { prod: '', qty: '', unit: 'doses' }
+    };
+
+    const draft = localStorage.getItem('capoeira_draft');
+    if (draft) {
+        try {
+            const d = JSON.parse(draft);
+            if (d.date === today) {
+                if(confirm('Existe um rascunho para hoje. Deseja recuperá-lo?')) {
+                    newReport = d;
+                } else {
+                    localStorage.removeItem('capoeira_draft');
+                }
+            }
+        } catch (e) {}
+    }
+
+    state.currentReport = newReport;
+    navTo('form');
+}
+
+function fillForm() {
+    const r = state.currentReport;
+    if (!r) return;
+    
+    isLoadingForm = true;
+
+    if (!r.meds) r.meds = { notUsed: false, items: [] };
+    if (!r.vacinas) r.vacinas = { notUsed: false, items: [] };
+    if (!r.tempMed) r.tempMed = { prod: '', qty: '', unit: 'kg' };
+    if (!r.tempVac) r.tempVac = { prod: '', qty: '', unit: 'doses' };
+
+    document.getElementById('inDate').value = r.date;
+    document.getElementById('inWorker').value = r.worker;
+    document.getElementById('inCapoeira').value = r.capoeira;
+    document.getElementById('inLote').value = r.lote; 
+
+    document.getElementById('inRacaoQty').value = r.racao.qty;
+    document.getElementById('inRacaoUnit').value = r.racao.unit;
+    document.getElementById('inRacaoWeight').value = r.racao.weight;
+    document.getElementById('chkRacaoNaoUsado').checked = r.racao.notUsed;
+    toggleRacaoSaco();
+    calcRacao();
+
+    document.getElementById('inMorteQty').value = r.morte.qty;
+    document.getElementById('inMorteObs').value = r.morte.obs;
+
+    document.getElementById('chkVendasAtivo').checked = r.vendas.ativo;
+    document.getElementById('inVendaCliente').value = r.vendas.cliente;
+    document.getElementById('inVendaQty').value = r.vendas.qty;
+    toggleVendas(true);
+
+    document.getElementById('chkMedNaoUsado').checked = r.meds.notUsed;
+    renderDynamicList('med');
+
+    document.getElementById('inAguaQty').value = r.agua.qty;
+    document.getElementById('chkAguaNaoUsado').checked = r.agua.notUsed;
+
+    document.getElementById('inSerrQty').value = r.serradura.qty;
+    document.getElementById('inSerrUnit').value = r.serradura.unit;
+    document.getElementById('chkSerrNaoUsado').checked = r.serradura.notUsed;
+
+    document.getElementById('chkVacNaoUsado').checked = r.vacinas.notUsed;
+    renderDynamicList('vac');
+
+    document.getElementById('inCarvQty').value = r.carvao.qty;
+    document.getElementById('inCarvUnit').value = r.carvao.unit;
+    document.getElementById('chkCarvNaoUsado').checked = r.carvao.notUsed;
+
+    document.getElementById('inObsGeral').value = r.obsGeral;
+
+    document.getElementById('inMedProd').value = r.tempMed.prod || '';
+    document.getElementById('inMedQty').value = r.tempMed.qty || '';
+    document.getElementById('selMedUnit').value = r.tempMed.unit || 'kg';
+
+    document.getElementById('inVacProd').value = r.tempVac.prod || '';
+    document.getElementById('inVacQty').value = r.tempVac.qty || '';
+    document.getElementById('selVacUnit').value = r.tempVac.unit || 'doses';
+
+    ['racao', 'med', 'agua', 'serradura', 'vac', 'carvao'].forEach(k => toggleNotUsed(k, true));
+    
+    isLoadingForm = false;
+}
+
+function autoSaveDraft() {
+    if (isLoadingForm) return; 
+    if (!state.currentReport) return;
+    
+    const r = state.currentReport;
+    
+    r.date = document.getElementById('inDate').value;
+    r.worker = document.getElementById('inWorker').value;
+    r.capoeira = document.getElementById('inCapoeira').value;
+    r.lote = document.getElementById('inLote').value; 
+    
+    r.racao.qty = document.getElementById('inRacaoQty').value;
+    r.racao.unit = document.getElementById('inRacaoUnit').value;
+    r.racao.weight = document.getElementById('inRacaoWeight').value;
+    
+    r.morte.qty = document.getElementById('inMorteQty').value;
+    r.morte.obs = document.getElementById('inMorteObs').value;
+    
+    r.vendas.cliente = document.getElementById('inVendaCliente').value;
+    r.vendas.qty = document.getElementById('inVendaQty').value;
+    
+    r.agua.qty = document.getElementById('inAguaQty').value;
+    r.serradura.qty = document.getElementById('inSerrQty').value;
+    r.serradura.unit = document.getElementById('inSerrUnit').value;
+    r.carvao.qty = document.getElementById('inCarvQty').value;
+    r.carvao.unit = document.getElementById('inCarvUnit').value;
+    r.obsGeral = document.getElementById('inObsGeral').value;
+
+    r.tempMed = {
+        prod: document.getElementById('inMedProd').value,
+        qty: document.getElementById('inMedQty').value,
+        unit: document.getElementById('selMedUnit').value
+    };
+    r.tempVac = {
+        prod: document.getElementById('inVacProd').value,
+        qty: document.getElementById('inVacQty').value,
+        unit: document.getElementById('selVacUnit').value
+    };
+
+    state.defaultWorker = r.worker;
+    state.defaultCapoeira = r.capoeira;
+    state.defaultLote = r.lote; 
+    saveToStorage();
+
+    localStorage.setItem('capoeira_draft', JSON.stringify(r));
+}
+
+function toggleNotUsed(section, silent = false) {
+    const isChecked = document.getElementById(`chk${capitalize(section)}NaoUsado`).checked;
+    
+    const map = {
+        racao: ['racao-fields'],
+        med: ['add-med-form'],
+        agua: ['agua-fields'],
+        serradura: ['serradura-fields'],
+        vac: ['add-vac-form', 'add-vac-form-2'],
+        carvao: ['carvao-fields']
+    };
+
+    const elements = map[section] || [];
+    elements.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.opacity = isChecked ? '0.3' : '1';
+            el.style.pointerEvents = isChecked ? 'none' : 'auto';
+        }
+    });
+
+    if (!silent && state.currentReport) {
+        if (section === 'racao') state.currentReport.racao.notUsed = isChecked;
+        if (section === 'med') state.currentReport.meds.notUsed = isChecked;
+        if (section === 'agua') state.currentReport.agua.notUsed = isChecked;
+        if (section === 'serradura') state.currentReport.serradura.notUsed = isChecked;
+        if (section === 'vac') state.currentReport.vacinas.notUsed = isChecked;
+        if (section === 'carvao') state.currentReport.carvao.notUsed = isChecked;
+        autoSaveDraft();
+    }
+}
+
+function toggleVendas(silent = false) {
+    const ativo = document.getElementById('chkVendasAtivo').checked;
+    document.getElementById('vendas-fields').classList.toggle('hidden', !ativo);
+    if (!silent && state.currentReport) {
+        state.currentReport.vendas.ativo = ativo;
+        autoSaveDraft();
+    }
+}
+
+function toggleRacaoSaco() {
+    const unit = document.getElementById('inRacaoUnit').value;
+    document.getElementById('racaoSacoWeightDiv').classList.toggle('hidden', unit !== 'sacos');
+    calcRacao();
+}
+
+function calcRacao() {
+    const unit = document.getElementById('inRacaoUnit').value;
+    const qty = parseFloat(document.getElementById('inRacaoQty').value.replace(',', '.')) || 0;
+    const weight = parseFloat(document.getElementById('inRacaoWeight').value.replace(',', '.')) || 0;
+    const info = document.getElementById('racaoTotalInfo');
+
+    if (unit === 'sacos' && qty > 0 && weight > 0) {
+        info.innerHTML = `Total: <strong>${(qty * weight).toFixed(2).replace('.', ',')} kg</strong>`;
+    } else {
+        info.innerHTML = '';
+    }
+    autoSaveDraft();
+}
+
+function validateInt(input) {
+    if (input.value.includes('.') || input.value.includes(',')) {
+        input.value = Math.floor(parseFloat(input.value.replace(',', '.'))) || '';
+    }
+}
+
+// ================= PRODUTOS DINÂMICOS =================
+function populateDatalists() {
+    const dlMed = document.getElementById('dlMedProd');
+    if(dlMed) {
+        dlMed.innerHTML = state.customMeds.map(m => `<option value="${m}">`).join('');
+    }
+
+    const dlVac = document.getElementById('dlVacProd');
+    if(dlVac) {
+        dlVac.innerHTML = state.customVacs.map(v => `<option value="${v}">`).join('');
+    }
+
+    const dlClientes = document.getElementById('dlClientes');
+    if (dlClientes) dlClientes.innerHTML = state.customClients.map(c => `<option value="${c}">`).join('');
+}
+
+function setupListeners() {
+    ['inMedProd', 'inMedQty', 'inVacProd', 'inVacQty'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', autoSaveDraft);
+    });
+    ['selMedUnit', 'selVacUnit'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('change', autoSaveDraft);
+    });
+}
+
+function isValidQuantity(val) {
+    if (!val) return false;
+    const num = parseFloat(val.replace(',', '.'));
+    return !isNaN(num) && num > 0;
+}
+
+function validateAndAdd(type) {
+    if (!state.currentReport) return false;
+
+    if (type === 'med') {
+        const prodEl = document.getElementById('inMedProd');
+        const qtyEl = document.getElementById('inMedQty');
+        const unitEl = document.getElementById('selMedUnit');
+        
+        const prod = prodEl.value.trim();
+        const qty = qtyEl.value.trim();
+        const unit = unitEl.value;
+
+        if (!prod && !qty) return true; 
+        
+        if (!prod) {
+            showToast('⚠️ Escreva o nome do medicamento.', true);
+            return false;
+        }
+        if (!isValidQuantity(qty)) {
+            showToast('⚠️ A quantidade deve ser maior que zero.', true);
+            return false;
+        }
+
+        if (!state.currentReport.meds) state.currentReport.meds = { notUsed: false, items: [] };
+        if (!state.currentReport.meds.items) state.currentReport.meds.items = [];
+        
+        state.currentReport.meds.items.push({ id: Date.now(), prod, qty: qty.replace(',', '.'), unit });
+        
+        if (!state.customMeds.includes(prod)) {
+            state.customMeds.push(prod);
+        }
+        
+        prodEl.value = '';
+        qtyEl.value = '';
+        
+        const chkMed = document.getElementById('chkMedNaoUsado');
+        if (chkMed.checked) {
+            chkMed.checked = false;
+            state.currentReport.meds.notUsed = false;
+            toggleNotUsed('med', true);
+        }
+
+        populateDatalists();
+        renderDynamicList('med');
+        autoSaveDraft();
+        return true;
+    } 
+    else if (type === 'vac') {
+        const prodEl = document.getElementById('inVacProd');
+        const qtyEl = document.getElementById('inVacQty');
+        const unitEl = document.getElementById('selVacUnit');
+
+        const prod = prodEl.value.trim();
+        const qty = qtyEl.value.trim();
+        const unit = unitEl.value;
+
+        if (!prod && !qty) return true;
+        
+        if (!prod) {
+            showToast('⚠️ Escreva o nome da vacina.', true);
+            return false;
+        }
+        if (!isValidQuantity(qty)) {
+            showToast('⚠️ A quantidade deve ser maior que zero.', true);
+            return false;
+        }
+
+        if (!state.currentReport.vacinas) state.currentReport.vacinas = { notUsed: false, items: [] };
+        if (!state.currentReport.vacinas.items) state.currentReport.vacinas.items = [];
+
+        state.currentReport.vacinas.items.push({ id: Date.now(), prod, qty: qty.replace(',', '.'), unit });
+        
+        if (!state.customVacs.includes(prod)) {
+            state.customVacs.push(prod);
+        }
+
+        prodEl.value = '';
+        qtyEl.value = '';
+
+        const chkVac = document.getElementById('chkVacNaoUsado');
+        if (chkVac.checked) {
+            chkVac.checked = false;
+            state.currentReport.vacinas.notUsed = false;
+            toggleNotUsed('vac', true);
+        }
+
+        populateDatalists();
+        renderDynamicList('vac');
+        autoSaveDraft();
+        return true;
+    }
+    return false;
+}
+
+function renderDynamicList(type) {
+    const container = document.getElementById(type === 'med' ? 'list-meds' : 'list-vacinas');
+    if(!container) return;
+    
+    let items = [];
+    
+    if (state.currentReport) {
+        if (type === 'med' && state.currentReport.meds) {
+            items = state.currentReport.meds.items || [];
+        } else if (type === 'vac' && state.currentReport.vacinas) {
+            items = state.currentReport.vacinas.items || [];
+        }
+    }
+    
+    if (items.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+
+    container.innerHTML = items.map(item => {
+        return `
+        <div class="dynamic-item">
+            <div class="dynamic-item-info">
+                <strong>${item.prod}</strong>
+                <span>${item.qty} ${item.unit}</span>
+            </div>
+            <button type="button" class="btn-danger btn-sm" onclick="removeDynamicItem('${type}', ${item.id})">✕</button>
+        </div>`;
+    }).join('');
+}
+
+function removeDynamicItem(type, id) {
+    if (type === 'med') {
+        state.currentReport.meds.items = state.currentReport.meds.items.filter(i => i.id !== id);
+        renderDynamicList('med');
+    } else {
+        state.currentReport.vacinas.items = state.currentReport.vacinas.items.filter(i => i.id !== id);
+        renderDynamicList('vac');
+    }
+    autoSaveDraft();
+}
+
+// ================= RELATÓRIO =================
+function getReportText(isPreview = true) {
+    const r = state.currentReport;
+    if(!r) return '';
+
+    let t = `*RELATÓRIO DIÁRIO — CAPOEIRA*\n\n`;
+    t += `Data: ${formatDate(r.date)}\n`;
+    t += `Trabalhador: ${r.worker || '(Não indicado)'}\n`;
+    t += `Capoeira: ${r.capoeira || '(Não indicado)'}\n`;
+    t += `Lote: ${r.lote || '(Não indicado)'}\n\n`;
+
+    let secao = [];
+
+    if (!r.racao.notUsed && r.racao.qty && r.racao.qty !== '0') {
+        let str = `Ração: `;
+        if (r.racao.unit === 'sacos') {
+            const w = r.racao.weight ? ` de ${r.racao.weight} kg` : '';
+            const total = r.racao.weight ? ` — Total: ${(parseFloat(r.racao.qty.replace(',', '.')) * parseFloat(r.racao.weight.replace(',', '.'))).toFixed(2).replace('.', ',')} kg` : '';
+            str += `${r.racao.qty} sacos${w}${total}`;
+        } else {
+            str += `${r.racao.qty} kg`;
+        }
+        secao.push(str);
+    }
+
+    if (r.morte.qty && r.morte.qty !== '0') {
+        let str = `Mortalidade: ${r.morte.qty} frangos`;
+        if (r.morte.obs) str += ` (${r.morte.obs})`;
+        secao.push(str);
+    }
+
+    if (r.vendas.ativo && r.vendas.qty && r.vendas.qty !== '0') {
+        let str = `Vendas: ${r.vendas.qty} aves`;
+        if (r.vendas.cliente) str += ` (Cliente: ${r.vendas.cliente})`;
+        secao.push(str);
+    }
+
+    if (!r.meds.notUsed && r.meds.items && r.meds.items.length > 0) {
+        let str = `Medicamentos:\n`;
+        r.meds.items.forEach(i => str += `   • ${i.prod}: ${i.qty} ${i.unit}\n`);
+        secao.push(str.trim());
+    }
+
+    if (!r.agua.notUsed && r.agua.qty && r.agua.qty !== '0') {
+        secao.push(`Água: ${r.agua.qty} L`);
+    }
+
+    if (!r.serradura.notUsed && r.serradura.qty && r.serradura.qty !== '0') {
+        secao.push(`Serradura: ${r.serradura.qty} ${r.serradura.unit}`);
+    }
+
+    if (!r.vacinas.notUsed && r.vacinas.items && r.vacinas.items.length > 0) {
+        let str = `Vacinas:\n`;
+        r.vacinas.items.forEach(i => {
+            str += `   • ${i.prod}: ${i.qty} ${i.unit}\n`;
+        });
+        secao.push(str.trim());
+    }
+
+    if (!r.carvao.notUsed && r.carvao.qty && r.carvao.qty !== '0') {
+        secao.push(`Carvão: ${r.carvao.qty} ${r.carvao.unit}`);
+    }
+
+    if (secao.length === 0) {
+        t += `(Nenhum consumo registado)\n\n`;
+    } else {
+        secao.forEach((s, idx) => {
+            t += `${idx + 1}. ${s}\n`;
+        });
+        t += `\n`;
+    }
+
+    t += `Observações: ${r.obsGeral || 'Sem observações'}\n`;
+    return t;
+}
+
+function previewReport() {
+    if (!validateAndAdd('med')) return;
+    if (!validateAndAdd('vac')) return;
+
+    const txt = getReportText(true);
+    document.getElementById('report-text').textContent = txt;
+
+    let alerts = [];
+    const r = state.currentReport;
+    if (!r.worker) alerts.push('Trabalhador por preencher.');
+    if (!r.capoeira) alerts.push('Capoeira por preencher.');
+    if (!r.lote) alerts.push('Lote por preencher.');
+
+    const alertBox = document.getElementById('preview-alerts');
+    if (alerts.length > 0) {
+        alertBox.innerHTML = `
+            <div class="card" style="border-left: 4px solid var(--danger); padding: 12px; background: #ffebee;">
+                <strong class="text-danger">Atenção:</strong> Existem campos de identificação por preencher.
+                <ul style="margin: 8px 0 0 0; padding-left: 20px; font-size: 14px; color: #b71c1c;">
+                    ${alerts.map(a => `<li>${a}</li>`).join('')}
+                </ul>
+            </div>`;
+    } else {
+        alertBox.innerHTML = '';
+    }
+
+    navTo('preview');
+}
+
+async function copyReport() {
+    const txt = getReportText(false);
+    try {
+        await navigator.clipboard.writeText(txt);
+        showToast('Relatório copiado!');
+    } catch (err) {
+        showToast('Erro ao copiar.', true);
+    }
+}
+
+function shareReport() {
+    const txt = getReportText(false);
+    if (navigator.share) {
+        navigator.share({ text: txt }).catch(() => {});
+    } else {
+        window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, '_blank');
+    }
+}
+
+function saveReportToHistory() {
+    if (!validateAndAdd('med')) return;
+    if (!validateAndAdd('vac')) return;
+
+    const r = state.currentReport;
+    state.defaultWorker = r.worker;
+    state.defaultCapoeira = r.capoeira;
+    state.defaultLote = r.lote;
+
+    if (r.vendas.ativo && r.vendas.cliente) {
+        const cName = r.vendas.cliente.trim();
+        if (!state.customClients.some(c => c.toLowerCase() === cName.toLowerCase())) {
+            state.customClients.push(cName);
+        }
+    }
+
+    const existingIdx = state.history.findIndex(h => h.id === r.id);
+    if (existingIdx >= 0) {
+        state.history[existingIdx] = r;
+        showToast('Relatório atualizado!');
+    } else {
+        state.history.push(r);
+        showToast('Relatório guardado!');
+    }
+
+    saveToStorage();
+    localStorage.removeItem('capoeira_draft');
+    navTo('dashboard');
+}
+
+// ================= HISTÓRICO =================
+function renderHistory() {
+    const filterDate = document.getElementById('filterDate').value;
+    const filterLote = document.getElementById('filterLote').value.toLowerCase();
+    
+    let filtered = state.history;
+    if (filterDate) filtered = filtered.filter(h => h.date === filterDate);
+    if (filterLote) filtered = filtered.filter(h => (h.lote || '').toLowerCase().includes(filterLote));
+
+    filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    const list = document.getElementById('history-list');
+    if (filtered.length === 0) {
+        list.innerHTML = '<p class="text-muted" style="text-align:center;">Nenhum registo encontrado.</p>';
+        return;
+    }
+
+    list.innerHTML = filtered.map(h => `
+        <div class="history-item">
+            <div class="history-info">
+                <h4>${formatDate(h.date)} - Lote ${h.lote || '?'}</h4>
+                <div class="text-muted">${h.capoeira || 'Sem capoeira'} | ${h.worker || 'Sem nome'}</div>
+            </div>
+            <div class="flex-row">
+                <button class="btn-sm btn-outline" onclick="editHistory('${h.id}')">✏️</button>
+                <button class="btn-sm btn-danger" onclick="deleteHistory('${h.id}')">🗑️</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function editHistory(id) {
+    const rep = state.history.find(h => h.id === id);
+    if (rep) {
+        state.currentReport = JSON.parse(JSON.stringify(rep));
+        if (!state.currentReport.meds) state.currentReport.meds = { notUsed: false, items: [] };
+        if (!state.currentReport.vacinas) state.currentReport.vacinas = { notUsed: false, items: [] };
+        if (!state.currentReport.tempMed) state.currentReport.tempMed = { prod: '', qty: '', unit: 'kg' };
+        if (!state.currentReport.tempVac) state.currentReport.tempVac = { prod: '', qty: '', unit: 'doses' };
+        navTo('form');
+    }
+}
+
+function deleteHistory(id) {
+    if (confirm('Tem a certeza que deseja eliminar este relatório?')) {
+        state.history = state.history.filter(h => h.id !== id);
+        saveToStorage();
+        renderHistory();
+        showToast('Relatório eliminado.');
+    }
+}
+
+// ================= DEFINIÇÕES / BACKUP =================
+function exportData() {
+    const dataStr = JSON.stringify(state, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `backup_capoeira_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Backup exportado.');
+}
+
+function importData() {
+    const fileInput = document.getElementById('importFile');
+    const file = fileInput.files[0];
+    if (!file) return showToast('Selecione um ficheiro.', true);
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const parsed = JSON.parse(e.target.result);
+            if (parsed.history && Array.isArray(parsed.history)) {
+                if (confirm('Substituir os dados atuais pelo backup?')) {
+                    state = parsed;
+                    saveToStorage();
+                    populateDatalists();
+                    showToast('Dados importados!');
+                    fileInput.value = '';
+                    navTo('dashboard');
+                }
+            } else {
+                showToast('Ficheiro inválido.', true);
+            }
+        } catch (err) {
+            showToast('Erro ao ler o ficheiro JSON.', true);
+        }
+    };
+    reader.readAsText(file);
+}
+
+function clearAllData() {
+    if (confirm('ATENÇÃO: Isto vai apagar TODOS os relatórios, PIN e dados. Tem a certeza?')) {
+        localStorage.removeItem('capoeira_app_data');
+        localStorage.removeItem('capoeira_draft');
+        state = { view: 'dashboard', currentReport: null, history: [], customMeds: [], customVacs: [], customClients: [], defaultWorker: '', defaultCapoeira: '', defaultLote: '', pin: '', alertasVacinas: [] };
+        currentPinMode = 'setup';
+        updateAuthUI();
+        showToast('Todos os dados foram apagados.');
+        navTo('auth');
+    }
+}
+
+// ================= UTILS =================
+function formatDate(isoStr) {
+    if (!isoStr) return '';
+    const parts = isoStr.split('-');
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
+
+function capitalize(s) {
+    if (s === 'racao') return 'Racao';
+    if (s === 'med') return 'Med';
+    if (s === 'agua') return 'Agua';
+    if (s === 'serradura') return 'Serr';
+    if (s === 'vac') return 'Vac';
+    if (s === 'carvao') return 'Carv';
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function showToast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = isError ? 'show error' : 'show';
+    setTimeout(() => t.classList.remove('show', 'error'), 4000);
+}
+
+init();
+</script>
+</body>
+</html>
