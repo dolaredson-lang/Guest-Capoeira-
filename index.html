@@ -3,73 +3,121 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#1b5e20">
+<meta name="theme-color" content="#0f5132">
 <link rel="manifest" href="manifest.json">
 <title>Gestão de Capoeira</title>
 <style>
     :root {
-        --primary: #1b5e20; --primary-light: #e8f5e9; --secondary: #ff8f00;
-        --bg: #f4f7f6; --surface: #ffffff; --text: #263238; --text-muted: #607d8b;
-        --danger: #d32f2f; --border: #cfd8dc; --radius: 12px;
-        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --primary: #0f5132;
+        --primary-light: #d1e7dd;
+        --primary-dark: #0a3622;
+        --secondary: #e0a800;
+        --bg: #f8f9fa;
+        --surface: #ffffff;
+        --text: #212529;
+        --text-muted: #6c757d;
+        --danger: #dc3545;
+        --danger-light: #f8d7da;
+        --border: #dee2e6;
+        --radius: 14px;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.04);
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); color: var(--text); font-size: 16px; line-height: 1.5; padding-bottom: 80px; }
-    .container { max-width: 800px; margin: 0 auto; padding: 16px; }
-    header { background-color: var(--primary); color: white; padding: 16px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-    header h1 { margin: 0; font-size: 20px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-    .view { display: none; animation: fadeIn 0.3s ease; }
+    body {
+        margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: var(--bg); color: var(--text); font-size: 16px; line-height: 1.5; padding-bottom: 80px;
+        -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 600px; margin: 0 auto; padding: 16px; }
+    
+    /* Header */
+    header {
+        background-color: var(--primary); color: white; padding: 16px;
+        position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+    header h1 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
+    
+    /* Views */
+    .view { display: none; animation: fadeIn 0.25s ease-out; }
     .view.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    button { font-family: inherit; font-size: 16px; font-weight: 600; padding: 14px 20px; border: none; border-radius: var(--radius); cursor: pointer; transition: opacity 0.2s, transform 0.1s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-    button:active { transform: scale(0.98); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Buttons */
+    button {
+        font-family: inherit; font-size: 15px; font-weight: 600; padding: 14px 20px; border: none; border-radius: 10px;
+        cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    button:active { transform: scale(0.97); }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-primary { background-color: var(--primary); color: white; width: 100%; }
-    .btn-secondary { background-color: var(--secondary); color: white; width: 100%; }
+    .btn-primary { background-color: var(--primary); color: white; width: 100%; box-shadow: 0 4px 10px rgba(15, 81, 50, 0.2); }
+    .btn-secondary { background-color: var(--secondary); color: var(--primary-dark); width: 100%; box-shadow: 0 4px 10px rgba(224, 168, 0, 0.2); }
     .btn-outline { background-color: transparent; border: 2px solid var(--primary); color: var(--primary); }
     .btn-danger { background-color: var(--danger); color: white; }
-    .btn-sm { padding: 8px 12px; font-size: 14px; border-radius: 8px; }
-    .btn-icon { padding: 10px; border-radius: 50%; background: rgba(255,255,255,0.2); color: white; }
-    .card { background: var(--surface); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow); }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
-    .card-title { font-size: 18px; font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+    .btn-sm { padding: 8px 12px; font-size: 13px; border-radius: 8px; }
+    .btn-icon { padding: 10px; border-radius: 50%; background: rgba(255,255,255,0.15); color: white; }
+
+    /* Cards */
+    .card { background: var(--surface); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+    .card-highlight { border-top: 4px solid var(--secondary); }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .card-title { font-size: 16px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+    
+    /* Forms */
     .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--text-muted); }
-    input[type="text"], input[type="number"], input[type="date"], input[type="password"], select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; font-family: inherit; background-color: #fff; color: var(--text); }
-    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-light); }
+    .form-group label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 6px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    input[type="text"], input[type="number"], input[type="date"], input[type="password"], select, textarea {
+        width: 100%; padding: 14px; border: 1.5px solid var(--border); border-radius: 10px;
+        font-size: 16px; font-family: inherit; background-color: #fff; color: var(--text); transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
     .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .input-row-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; }
-    .status-toggle { display: flex; align-items: center; font-size: 14px; color: var(--text-muted); margin-top: 8px; cursor: pointer; }
-    .status-toggle input { width: auto; margin-right: 8px; transform: scale(1.2); }
+    
+    /* Toggles */
+    .status-toggle { display: flex; align-items: center; font-size: 14px; font-weight: 600; color: var(--text); margin-top: 8px; cursor: pointer; padding: 12px; background: var(--bg); border-radius: 10px; border: 1.5px solid var(--border); }
+    .status-toggle input { width: 20px; height: 20px; margin-right: 12px; accent-color: var(--primary); }
+
+    /* Dynamic Lists */
     .dynamic-list { margin-bottom: 12px; }
-    .dynamic-item { display: flex; align-items: center; justify-content: space-between; background: #f4f7f6; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid var(--primary); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-    .dynamic-item-info { font-size: 15px; color: #1a1a1a !important; }
-    .dynamic-item-info strong { display: block; font-size: 16px; color: #1b5e20 !important; margin-bottom: 2px; }
-    .preview-box { background: #fff; border: 1px dashed var(--primary); padding: 16px; border-radius: var(--radius); font-family: monospace; font-size: 14px; white-space: pre-wrap; margin-bottom: 16px; color: #333; }
-    .text-danger { color: var(--danger); font-size: 12px; margin-top: 4px; display: block; }
-    .text-muted { color: var(--text-muted); font-size: 14px; }
+    .dynamic-item { display: flex; align-items: center; justify-content: space-between; background: var(--bg); padding: 12px; border-radius: 10px; margin-bottom: 8px; border: 1px solid var(--border); border-left: 4px solid var(--primary); }
+    .dynamic-item-info { font-size: 14px; color: var(--text); }
+    .dynamic-item-info strong { display: block; font-size: 15px; color: var(--primary-dark); margin-bottom: 2px; }
+
+    /* Preview */
+    .preview-box { background: var(--bg); border: 1px solid var(--border); padding: 20px; border-radius: var(--radius); font-family: "Courier New", Courier, monospace; font-size: 14px; white-space: pre-wrap; margin-bottom: 20px; color: var(--text); line-height: 1.6; }
+
+    /* Menus */
+    .menu-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .menu-btn { background: var(--surface); border: 1px solid var(--border); padding: 20px; border-radius: var(--radius); text-align: left; display: flex; align-items: center; gap: 16px; font-size: 16px; color: var(--text); box-shadow: var(--shadow-sm); width: 100%; }
+    .menu-btn .icon { font-size: 24px; background: var(--primary-light); color: var(--primary-dark); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
+
+    /* History */
+    .history-item { background: var(--surface); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .history-info h4 { margin: 0 0 4px 0; font-size: 15px; color: var(--primary-dark); }
+    
+    /* Auth PIN */
+    #view-auth { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+    #view-auth.active { display: flex !important; }
+    .pin-dots { display: flex; gap: 16px; justify-content: center; margin: 30px 0; }
+    .pin-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--primary); background: transparent; transition: background 0.2s; }
+    .pin-dot.filled { background: var(--primary); }
+    .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; width: 100%; max-width: 320px; }
+    .keypad button { font-size: 24px; font-weight: 600; padding: 20px; background: var(--surface); color: var(--primary-dark); border-radius: 50%; box-shadow: var(--shadow); border: 1px solid var(--border); }
+    .keypad button:active { background: var(--primary-light); }
+
+    /* Toast */
+    #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--primary-dark); color: #fff; padding: 14px 24px; border-radius: 30px; font-size: 14px; font-weight: 600; transition: transform 0.3s ease; z-index: 2000; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.error { background: var(--danger); }
+    
     .hidden { display: none !important; }
     .mt-2 { margin-top: 8px; }
     .mt-4 { margin-top: 16px; }
     .mb-2 { margin-bottom: 8px; }
     .flex-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    .menu-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-    .menu-btn { background: var(--surface); border: 1px solid var(--border); padding: 20px; border-radius: var(--radius); text-align: left; display: flex; align-items: center; gap: 16px; font-size: 18px; color: var(--text); box-shadow: var(--shadow); width: 100%; }
-    .menu-btn .icon { font-size: 28px; }
-    .history-item { background: var(--surface); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; }
-    .history-info { flex: 1; }
-    .history-info h4 { margin: 0 0 4px 0; font-size: 16px; }
-    #view-auth { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-    #view-auth.active { display: flex !important; }
-    .pin-dots { display: flex; gap: 16px; justify-content: center; margin: 24px 0; }
-    .pin-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--primary); background: transparent; }
-    .pin-dot.filled { background: var(--primary); }
-    .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; max-width: 300px; }
-    .keypad button { font-size: 24px; padding: 20px; background: #fff; color: var(--text); border-radius: 50%; box-shadow: var(--shadow); }
-    .keypad button:active { background: var(--primary-light); }
-    #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #333; color: #fff; padding: 12px 24px; border-radius: 30px; font-size: 15px; font-weight: bold; transition: transform 0.3s ease; z-index: 2000; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-    #toast.show { transform: translateX(-50%) translateY(0); }
-    #toast.error { background: var(--danger); }
+    .text-muted { color: var(--text-muted); font-size: 13px; }
 </style>
 </head>
 <body>
@@ -80,52 +128,56 @@
 </header>
 
 <div class="container">
+    <!-- AUTH -->
     <div id="view-auth" class="view">
-        <h2 id="pin-title" style="color:var(--primary); margin-bottom: 4px;">Bem-vindo</h2>
-        <p id="pin-subtitle" class="text-muted">Introduza o seu PIN</p>
+        <h2 id="pin-title" style="color:var(--primary); margin-bottom: 4px; font-size: 24px;">Bem-vindo</h2>
+        <p id="pin-subtitle" class="text-muted">Introduza o seu PIN de acesso</p>
         <div class="pin-dots" id="auth-dots"></div>
         <div class="keypad" id="auth-keypad"></div>
         <div style="text-align: center; margin-top: 30px;">
-            <button id="btnCriarConta" class="text-muted" style="background:none; border:none; font-size:15px; text-decoration:underline; cursor:pointer;" onclick="ativarModoSetup()">Criar conta (Definir PIN)</button>
+            <button id="btnCriarConta" class="text-muted" style="background:none; border:none; font-size:14px; text-decoration:underline; cursor:pointer; font-weight: 500;" onclick="ativarModoSetup()">Criar conta (Definir PIN)</button>
         </div>
     </div>
 
+    <!-- DASHBOARD -->
     <div id="view-dashboard" class="view">
-        <div class="card">
-            <h2 style="margin-top:0; color:var(--primary);">Bem-vindo</h2>
-            <p class="text-muted">Registe a mortalidade e a entrada de material na capoeira.</p>
+        <div class="card" style="background: var(--primary-light); border: none;">
+            <h2 style="margin-top:0; color:var(--primary-dark); font-size: 20px;">Olá, Trabalhador</h2>
+            <p class="text-muted" style="color: var(--primary); margin-bottom: 0;">Registe a mortalidade e a entrada de material na capoeira.</p>
         </div>
         <div class="menu-grid">
             <button class="menu-btn" onclick="startNewReport()">
                 <span class="icon">📝</span>
                 <div>
-                    <strong style="display:block; font-size: 18px;">Novo Registo</strong>
-                    <span class="text-muted" style="font-size:13px;">Mortalidade e Entrada de Stock</span>
+                    <strong style="display:block; font-size: 16px; color: var(--primary-dark);">Novo Registo</strong>
+                    <span class="text-muted">Mortalidade e Entrada de Stock</span>
                 </div>
             </button>
             <button class="menu-btn" onclick="navTo('history')">
                 <span class="icon">📚</span>
                 <div>
-                    <strong style="display:block; font-size: 18px;">Histórico</strong>
-                    <span class="text-muted" style="font-size:13px;">Consultar registos anteriores</span>
+                    <strong style="display:block; font-size: 16px; color: var(--primary-dark);">Histórico</strong>
+                    <span class="text-muted">Consultar registos anteriores</span>
                 </div>
             </button>
             <button class="menu-btn" onclick="navTo('settings')">
                 <span class="icon">⚙️</span>
                 <div>
-                    <strong style="display:block; font-size: 18px;">Definições e Backup</strong>
-                    <span class="text-muted" style="font-size:13px;">Sair ou exportar dados</span>
+                    <strong style="display:block; font-size: 16px; color: var(--primary-dark);">Definições e Backup</strong>
+                    <span class="text-muted">Sair ou exportar dados</span>
                 </div>
             </button>
         </div>
     </div>
 
+    <!-- FORMULÁRIO -->
     <div id="view-form" class="view">
         <div class="flex-row" style="justify-content: space-between; margin-bottom: 16px;">
-            <h2 style="margin:0; color:var(--primary);">Registo Diário</h2>
+            <h2 style="margin:0; color:var(--primary-dark); font-size: 20px;">Registo Diário</h2>
             <button class="btn-sm btn-outline" onclick="navTo('dashboard')">Cancelar</button>
         </div>
 
+        <!-- Identificação -->
         <div class="card">
             <div class="card-header"><div class="card-title">📋 Identificação</div></div>
             <div class="input-row">
@@ -144,34 +196,36 @@
                     <input type="text" id="inWorker" placeholder="Seu nome" oninput="autoSaveDraft()">
                 </div>
                 <div class="form-group">
-                    <label>Capoeira / Galpão</label>
+                    <label>Capoeira</label>
                     <input type="text" id="inCapoeira" placeholder="Ex: Galpão A" oninput="autoSaveDraft()">
                 </div>
             </div>
         </div>
 
-        <!-- MORTALIDADE -->
-        <div class="card">
-            <div class="card-header"><div class="card-title">💀 Mortalidade</div></div>
+        <!-- Mortalidade -->
+        <div class="card card-highlight" style="border-top-color: var(--danger);">
+            <div class="card-header"><div class="card-title" style="color: var(--danger);">💀 Mortalidade</div></div>
             <label class="status-toggle mb-2">
                 <input type="checkbox" id="chkMorteZero" onchange="toggleMorteZero()"> Não houve mortalidade hoje (Registar 0)
             </label>
             <div id="morte-fields">
-                <div class="form-group">
-                    <label>Nº de frangos mortos</label>
-                    <input type="number" id="inMorteQty" min="0" step="1" placeholder="0" oninput="validateInt(this); autoSaveDraft()">
-                </div>
-                <div class="form-group">
-                    <label>Observação (opcional)</label>
-                    <input type="text" id="inMorteObs" placeholder="Ex: causas desconhecidas" oninput="autoSaveDraft()">
+                <div class="input-row">
+                    <div class="form-group">
+                        <label>Nº de frangos mortos</label>
+                        <input type="number" id="inMorteQty" min="0" step="1" placeholder="0" oninput="validateInt(this); autoSaveDraft()">
+                    </div>
+                    <div class="form-group">
+                        <label>Observação</label>
+                        <input type="text" id="inMorteObs" placeholder="Ex: causas" oninput="autoSaveDraft()">
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- ENTRADA DE STOCK -->
-        <div class="card" style="border: 2px solid var(--secondary);">
-            <div class="card-header"><div class="card-title" style="color:var(--secondary);">📦 Entrada de Stock (Receção)</div></div>
-            <p class="text-muted mb-2" style="font-size: 13px;">Preencha apenas o que recebeu hoje. O que não recebeu, deixe em branco.</p>
+        <!-- Receção de Stock -->
+        <div class="card card-highlight" style="border-top-color: var(--secondary);">
+            <div class="card-header"><div class="card-title" style="color: var(--secondary);">📦 Entrada de Stock</div></div>
+            <p class="text-muted mb-2">Preencha apenas o que recebeu hoje.</p>
             
             <div class="form-group">
                 <label>🌾 Ração Recebida</label>
@@ -192,16 +246,11 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>💧 Água Recebida (Litros)</label>
-                <input type="number" id="inAguaQty" placeholder="0" oninput="autoSaveDraft()">
-            </div>
-
             <!-- Medicamentos -->
             <div class="dynamic-list" id="list-meds" style="margin-top: 16px;"></div>
-            <div class="input-row-3" id="add-med-form">
+            <div class="input-row-3" id="add-med-form" style="background: var(--bg); padding: 12px; border-radius: 10px; border: 1px solid var(--border);">
                 <div class="form-group" style="margin-bottom:0;">
-                    <label>Medicamento/Promotor</label>
+                    <label>Medicamento</label>
                     <input type="text" id="inMedProd" list="dlMedProd" placeholder="Nome" oninput="autoSaveDraft()">
                     <datalist id="dlMedProd"></datalist>
                 </div>
@@ -212,21 +261,20 @@
                 <div class="form-group" style="margin-bottom:0;">
                     <label>Unid.</label>
                     <select id="selMedUnit" onchange="autoSaveDraft()">
-                        <option value="mL">mL</option>
-                        <option value="L">L</option>
-                        <option value="kg">kg</option>
                         <option value="pacote">pacote</option>
+                        <option value="L">L (litros)</option>
+                        <option value="kg">kg</option>
                     </select>
                 </div>
             </div>
-            <button type="button" class="btn-outline btn-sm mt-2" onclick="addDynamicItem('med')">Adicionar Medicamento</button>
+            <button type="button" class="btn-outline btn-sm mt-2" onclick="addDynamicItem('med')">+ Adicionar Medicamento</button>
 
             <!-- Vacinas -->
             <div class="dynamic-list" id="list-vacinas" style="margin-top: 16px;"></div>
-            <div class="input-row" id="add-vac-form">
+            <div class="input-row" id="add-vac-form" style="background: var(--bg); padding: 12px; border-radius: 10px; border: 1px solid var(--border);">
                 <div class="form-group" style="margin-bottom:0;">
                     <label>Vacina</label>
-                    <input type="text" id="inVacProd" list="dlVacProd" placeholder="Nome da vacina" oninput="autoSaveDraft()">
+                    <input type="text" id="inVacProd" list="dlVacProd" placeholder="Nome" oninput="autoSaveDraft()">
                     <datalist id="dlVacProd"></datalist>
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
@@ -234,10 +282,10 @@
                     <input type="text" id="inVacQty" inputmode="decimal" placeholder="0" oninput="autoSaveDraft()">
                 </div>
             </div>
-            <button type="button" class="btn-outline btn-sm mt-2" onclick="addDynamicItem('vac')">Adicionar Vacina</button>
+            <button type="button" class="btn-outline btn-sm mt-2" onclick="addDynamicItem('vac')">+ Adicionar Vacina</button>
         </div>
 
-        <!-- VENDAS -->
+        <!-- Vendas -->
         <div class="card">
             <div class="card-header"><div class="card-title">💰 Vendas de Frangos</div></div>
             <label class="status-toggle mb-2">
@@ -258,21 +306,22 @@
             </div>
         </div>
 
+        <!-- Observações -->
         <div class="card">
             <div class="form-group">
                 <label>Observações Gerais</label>
-                <textarea id="inObsGeral" rows="3" placeholder="Alguma nota..." oninput="autoSaveDraft()"></textarea>
+                <textarea id="inObsGeral" rows="2" placeholder="Alguma nota..." oninput="autoSaveDraft()"></textarea>
             </div>
             <button type="button" class="btn-primary" onclick="previewReport()">Pré-visualizar Relatório</button>
         </div>
     </div>
 
+    <!-- PREVIEW -->
     <div id="view-preview" class="view">
         <div class="flex-row" style="justify-content: space-between; margin-bottom: 16px;">
-            <h2 style="margin:0; color:var(--primary);">Relatório</h2>
+            <h2 style="margin:0; color:var(--primary-dark); font-size: 20px;">Relatório</h2>
             <button class="btn-sm btn-outline" onclick="navTo('form')">✏️ Editar</button>
         </div>
-        <div id="preview-alerts"></div>
         <div class="preview-box" id="report-text"></div>
         <div class="flex-row mt-4">
             <button class="btn-secondary" style="flex:1;" onclick="shareReport()">📤 WhatsApp</button>
@@ -281,50 +330,51 @@
         <button class="btn-primary mt-2" style="width:100%;" onclick="saveReportToHistory()">💾 Guardar e Concluir</button>
     </div>
 
+    <!-- HISTÓRICO -->
     <div id="view-history" class="view">
         <div class="flex-row" style="justify-content: space-between; margin-bottom: 16px;">
-            <h2 style="margin:0; color:var(--primary);">Histórico</h2>
+            <h2 style="margin:0; color:var(--primary-dark); font-size: 20px;">Histórico</h2>
             <button class="btn-sm btn-outline" onclick="navTo('dashboard')">Voltar</button>
         </div>
-        <div class="card mb-2">
+        <div class="card mb-2" style="padding: 12px;">
             <div class="input-row">
                 <div class="form-group" style="margin:0;">
-                    <label>Filtrar Data</label>
                     <input type="date" id="filterDate" onchange="renderHistory()">
                 </div>
                 <div class="form-group" style="margin:0;">
-                    <label>Filtrar Lote</label>
-                    <input type="text" id="filterLote" placeholder="Lote..." oninput="renderHistory()">
+                    <input type="text" id="filterLote" placeholder="Filtrar Lote..." oninput="renderHistory()">
                 </div>
             </div>
         </div>
         <div id="history-list"></div>
     </div>
 
+    <!-- DEFINIÇÕES -->
     <div id="view-settings" class="view">
         <div class="flex-row" style="justify-content: space-between; margin-bottom: 16px;">
-            <h2 style="margin:0; color:var(--primary);">Definições</h2>
+            <h2 style="margin:0; color:var(--primary-dark); font-size: 20px;">Definições</h2>
             <button class="btn-sm btn-outline" onclick="navTo('dashboard')">Voltar</button>
         </div>
         <div class="card">
-            <h3>Segurança</h3>
+            <h3 style="color: var(--primary-dark); font-size: 16px; margin-top: 0;">Segurança</h3>
             <button class="btn-outline mt-2" style="width:100%;" onclick="logout()">🔒 Terminar Sessão</button>
         </div>
         <div class="card">
-            <h3>Backup de Dados</h3>
+            <h3 style="color: var(--primary-dark); font-size: 16px; margin-top: 0;">Backup de Dados</h3>
             <button class="btn-primary mt-2" onclick="exportData()">📥 Exportar Backup</button>
             <div class="mt-4" style="border-top: 1px solid var(--border); padding-top: 16px;">
-                <label style="font-weight:bold; margin-bottom:8px; display:block;">Importar Backup</label>
+                <label style="font-weight:bold; margin-bottom:8px; display:block; font-size: 13px; color: var(--text-muted);">Importar Backup</label>
                 <input type="file" id="importFile" accept=".json" style="margin-bottom: 12px; font-size: 14px;">
                 <button class="btn-secondary" onclick="importData()">📤 Importar</button>
             </div>
         </div>
         <div class="card" style="border: 1px solid var(--danger);">
-            <h3 class="text-danger">Zona de Perigo</h3>
+            <h3 style="color: var(--danger); font-size: 16px; margin-top: 0;">Zona de Perigo</h3>
             <button class="btn-danger mt-2" onclick="clearAllData()">🗑️ Apagar Tudo</button>
         </div>
     </div>
 </div>
+
 <div id="toast">Mensagem</div>
 
 <script>
@@ -334,10 +384,22 @@ let currentPinMode = 'login'; let tempPin = ''; let isLoadingForm = false;
 function init() { loadFromStorage(); setupKeypad(); populateDatalists(); setupListeners(); if (!state.pin) currentPinMode = 'setup'; else currentPinMode = 'login'; updateAuthUI(); navTo('auth'); }
 function loadFromStorage() { try { const saved = localStorage.getItem('capoeira_app_data'); if (saved) { const parsed = JSON.parse(saved); Object.assign(state, parsed); } } catch (e) {} }
 function saveToStorage() { try { localStorage.setItem('capoeira_app_data', JSON.stringify(state)); } catch (e) { showToast('Erro de armazenamento.', true); } }
-function navTo(viewId) { document.querySelectorAll('.view').forEach(v => { v.classList.remove('active'); v.style.display = 'none'; }); const target = document.getElementById('view-' + viewId); if (target) { target.classList.add('active'); target.style.display = (viewId === 'auth') ? 'flex' : 'block'; } state.view = viewId; if (viewId === 'dashboard' || viewId === 'auth') document.getElementById('btnHome').classList.add('hidden'); else document.getElementById('btnHome').classList.remove('hidden'); if (viewId === 'history') renderHistory(); if (viewId === 'dashboard') populateDatalists(); if (viewId === 'form' && state.currentReport) fillForm(); if (viewId !== 'auth') window.scrollTo(0, 0); }
+
+function navTo(viewId) { 
+    document.querySelectorAll('.view').forEach(v => { v.classList.remove('active'); v.style.display = 'none'; }); 
+    const target = document.getElementById('view-' + viewId); 
+    if (target) { target.classList.add('active'); target.style.display = (viewId === 'auth') ? 'flex' : 'block'; } 
+    state.view = viewId; 
+    if (viewId === 'dashboard' || viewId === 'auth') document.getElementById('btnHome').classList.add('hidden'); 
+    else document.getElementById('btnHome').classList.remove('hidden'); 
+    if (viewId === 'history') renderHistory(); 
+    if (viewId === 'dashboard') populateDatalists(); 
+    if (viewId === 'form' && state.currentReport) fillForm(); 
+    if (viewId !== 'auth') window.scrollTo(0, 0); 
+}
 
 function setupKeypad() { const container = document.getElementById('auth-keypad'); if(!container) return; container.innerHTML = ''; [1,2,3,4,5,6,7,8,9,'C',0,'OK'].forEach(n => { const btn = document.createElement('button'); btn.textContent = n; btn.onclick = () => handlePinInput(n); container.appendChild(btn); }); }
-function updateAuthUI() { const title = document.getElementById('pin-title'); const sub = document.getElementById('pin-subtitle'); const btn = document.getElementById('btnCriarConta'); const dots = document.getElementById('auth-dots'); if(!dots) return; dots.innerHTML = ''; for(let i=0; i<4; i++) { const d = document.createElement('div'); d.className = 'pin-dot'; dots.appendChild(d); } tempPin = ''; if (currentPinMode === 'setup') { title.textContent = "Criar PIN"; sub.textContent = "Defina um PIN de 4 dígitos"; btn.classList.add('hidden'); } else { title.textContent = "Bem-vindo de volta"; sub.textContent = "Introduza o seu PIN"; btn.classList.remove('hidden'); } }
+function updateAuthUI() { const title = document.getElementById('pin-title'); const sub = document.getElementById('pin-subtitle'); const btn = document.getElementById('btnCriarConta'); const dots = document.getElementById('auth-dots'); if(!dots) return; dots.innerHTML = ''; for(let i=0; i<4; i++) { const d = document.createElement('div'); d.className = 'pin-dot'; dots.appendChild(d); } tempPin = ''; if (currentPinMode === 'setup') { title.textContent = "Criar PIN"; sub.textContent = "Defina um PIN de 4 dígitos"; btn.classList.add('hidden'); } else { title.textContent = "Bem-vindo"; sub.textContent = "Introduza o seu PIN"; btn.classList.remove('hidden'); } }
 function ativarModoSetup() { currentPinMode = 'setup'; updateAuthUI(); }
 function handlePinInput(num) { const dots = document.getElementById('auth-dots'); if(!dots) return; if (num === 'C') tempPin = ''; else if (num === 'OK') { if (tempPin.length !== 4) return showToast('O PIN deve ter 4 dígitos', true); if (currentPinMode === 'setup') { state.pin = tempPin; saveToStorage(); showToast('PIN criado!'); navTo('dashboard'); } else { if (tempPin === state.pin) navTo('dashboard'); else { showToast('PIN incorreto.', true); tempPin = ''; } } } else { if (tempPin.length < 4) tempPin += num; } for (let i = 0; i < 4; i++) { if (dots.children[i]) dots.children[i].className = 'pin-dot' + (i < tempPin.length ? ' filled' : ''); } }
 function logout() { tempPin = ''; updateAuthUI(); navTo('auth'); }
@@ -347,13 +409,9 @@ function startNewReport() {
     let newReport = {
         id: 'rep_' + Date.now(), date: today, worker: state.defaultWorker, capoeira: state.defaultCapoeira, lote: state.defaultLote,
         morte: { qty: '', obs: '', isZero: false },
-        stock: { racaoSacos: '', racaoPeso: '50', serrSacos: '', carvSacos: '', aguaLitros: '' },
-        meds: { items: [] },
-        vacinas: { items: [] },
-        vendas: { ativo: false, cliente: '', qty: '' },
-        obsGeral: '',
-        tempMed: { prod: '', qty: '', unit: 'mL' },
-        tempVac: { prod: '', qty: '' }
+        stock: { racaoSacos: '', racaoPeso: '50', serrSacos: '', carvSacos: '' },
+        meds: { items: [] }, vacinas: { items: [] },
+        vendas: { ativo: false, cliente: '', qty: '' }, obsGeral: ''
     };
     const draft = localStorage.getItem('capoeira_draft');
     if (draft) { try { const d = JSON.parse(draft); if (d.date === today && confirm('Existe um rascunho para hoje. Recuperar?')) newReport = d; else localStorage.removeItem('capoeira_draft'); } catch (e) {} }
@@ -363,14 +421,14 @@ function startNewReport() {
 function fillForm() {
     const r = state.currentReport; if (!r) return; isLoadingForm = true;
     if (!r.meds) r.meds = { items: [] }; if (!r.vacinas) r.vacinas = { items: [] };
-    if (!r.stock) r.stock = { racaoSacos: '', racaoPeso: '50', serrSacos: '', carvSacos: '', aguaLitros: '' };
+    if (!r.stock) r.stock = { racaoSacos: '', racaoPeso: '50', serrSacos: '', carvSacos: '' };
     if (!r.morte) r.morte = { qty: '', obs: '', isZero: false };
     
     document.getElementById('inDate').value = r.date; document.getElementById('inWorker').value = r.worker; document.getElementById('inCapoeira').value = r.capoeira; document.getElementById('inLote').value = r.lote;
     document.getElementById('inMorteQty').value = r.morte.qty; document.getElementById('inMorteObs').value = r.morte.obs; document.getElementById('chkMorteZero').checked = r.morte.isZero || false; toggleMorteZero(true);
     
-    document.getElementById('inRacaoSacos').value = r.stock.racaoSacos; document.getElementById('inRacaoPeso').value = r.stock.racaoPeso;
-    document.getElementById('inSerrQty').value = r.stock.serrSacos; document.getElementById('inCarvQty').value = r.stock.carvSacos; document.getElementById('inAguaQty').value = r.stock.aguaLitros;
+    document.getElementById('inRacaoSacos').value = r.stock.racaoSacos || ''; document.getElementById('inRacaoPeso').value = r.stock.racaoPeso || '50';
+    document.getElementById('inSerrQty').value = r.stock.serrSacos || ''; document.getElementById('inCarvQty').value = r.stock.carvSacos || '';
     
     document.getElementById('chkVendasAtivo').checked = r.vendas.ativo; document.getElementById('inVendaCliente').value = r.vendas.cliente; document.getElementById('inVendaQty').value = r.vendas.qty; toggleVendas(true);
     renderDynamicList('med'); renderDynamicList('vac');
@@ -382,7 +440,7 @@ function autoSaveDraft() {
     if (isLoadingForm || !state.currentReport) return; const r = state.currentReport;
     r.date = document.getElementById('inDate').value; r.worker = document.getElementById('inWorker').value; r.capoeira = document.getElementById('inCapoeira').value; r.lote = document.getElementById('inLote').value;
     r.morte.qty = document.getElementById('inMorteQty').value; r.morte.obs = document.getElementById('inMorteObs').value; r.morte.isZero = document.getElementById('chkMorteZero').checked;
-    r.stock.racaoSacos = document.getElementById('inRacaoSacos').value; r.stock.racaoPeso = document.getElementById('inRacaoPeso').value; r.stock.serrSacos = document.getElementById('inSerrQty').value; r.stock.carvSacos = document.getElementById('inCarvQty').value; r.stock.aguaLitros = document.getElementById('inAguaQty').value;
+    r.stock.racaoSacos = document.getElementById('inRacaoSacos').value; r.stock.racaoPeso = document.getElementById('inRacaoPeso').value; r.stock.serrSacos = document.getElementById('inSerrQty').value; r.stock.carvSacos = document.getElementById('inCarvQty').value;
     r.vendas.cliente = document.getElementById('inVendaCliente').value; r.vendas.qty = document.getElementById('inVendaQty').value;
     r.obsGeral = document.getElementById('inObsGeral').value;
     state.defaultWorker = r.worker; state.defaultCapoeira = r.capoeira; state.defaultLote = r.lote; saveToStorage(); localStorage.setItem('capoeira_draft', JSON.stringify(r));
@@ -428,20 +486,16 @@ function renderDynamicList(type) {
     container.innerHTML = items.map(item => `
         <div class="dynamic-item">
             <div class="dynamic-item-info"><strong>${item.prod}</strong><span>${item.qty} ${item.unit || 'doses'}</span></div>
-            <button type="button" class="btn-danger btn-sm" onclick="removeDynamicItem('${type}', ${item.id})">✕</button>
+            <button type="button" class="btn-danger btn-sm" style="border-radius: 50%; padding: 8px 10px;" onclick="removeDynamicItem('${type}', ${item.id})">✕</button>
         </div>`).join('');
 }
 function removeDynamicItem(type, id) { if (type === 'med') state.currentReport.meds.items = state.currentReport.meds.items.filter(i => i.id !== id); else state.currentReport.vacinas.items = state.currentReport.vacinas.items.filter(i => i.id !== id); renderDynamicList(type); autoSaveDraft(); }
 
-// ================= RELATÓRIO =================
 function getReportText() {
     const r = state.currentReport; if(!r) return '';
-    let t = `*RELATÓRIO DIÁRIO — CAPOEIRA*\n\n`;
-    t += `Data: ${formatDate(r.date)}\nTrabalhador: ${r.worker || '(N/I)'}\nCapoeira: ${r.capoeira || '(N/I)'}\nLote: ${r.lote || '(N/I)'}\n\n`;
-    
+    let t = `*RELATÓRIO DIÁRIO — CAPOEIRA*\n\nData: ${formatDate(r.date)}\nTrabalhador: ${r.worker || '(N/I)'}\nCapoeira: ${r.capoeira || '(N/I)'}\nLote: ${r.lote || '(N/I)'}\n\n`;
     let secao = [];
     
-    // Mortalidade
     if (r.morte.isZero || (r.morte.qty && r.morte.qty !== '0')) {
         let str = `Mortalidade: ${r.morte.qty || 0} frangos`;
         if (r.morte.isZero) str += ` (Sem mortalidade)`;
@@ -449,23 +503,16 @@ function getReportText() {
         secao.push(str);
     } else { secao.push(`Mortalidade: (Por preencher)`); }
 
-    // Stock
     let stockStr = [];
     if (r.stock.racaoSacos > 0) stockStr.push(`   • Ração: ${r.stock.racaoSacos} sacos de ${r.stock.racaoPeso}kg`);
     if (r.stock.serrSacos > 0) stockStr.push(`   • Serradura: ${r.stock.serrSacos} sacos`);
     if (r.stock.carvSacos > 0) stockStr.push(`   • Carvão: ${r.stock.carvSacos} sacos`);
-    if (r.stock.aguaLitros > 0) stockStr.push(`   • Água: ${r.stock.aguaLitros} L`);
     if (r.meds.items && r.meds.items.length > 0) r.meds.items.forEach(i => stockStr.push(`   • ${i.prod}: ${i.qty} ${i.unit}`));
     if (r.vacinas.items && r.vacinas.items.length > 0) r.vacinas.items.forEach(i => stockStr.push(`   • Vacina ${i.prod}: ${i.qty} doses`));
 
-    if (stockStr.length > 0) {
-        secao.push(`Entrada de Stock:\n` + stockStr.join('\n'));
-    }
+    if (stockStr.length > 0) secao.push(`Entrada de Stock:\n` + stockStr.join('\n'));
 
-    // Vendas
-    if (r.vendas.ativo && r.vendas.qty && r.vendas.qty !== '0') {
-        secao.push(`Vendas: ${r.vendas.qty} aves ${r.vendas.cliente ? '(Cliente: '+r.vendas.cliente+')' : ''}`);
-    }
+    if (r.vendas.ativo && r.vendas.qty && r.vendas.qty !== '0') secao.push(`Vendas: ${r.vendas.qty} aves ${r.vendas.cliente ? '(Cliente: '+r.vendas.cliente+')' : ''}`);
 
     secao.forEach((s, idx) => { t += `${idx + 1}. ${s}\n`; });
     t += `\nObservações: ${r.obsGeral || 'Sem observações'}\n`;
@@ -473,10 +520,8 @@ function getReportText() {
 }
 
 function previewReport() {
-    // Se o utilizador preencheu os campos de med/vac mas não clicou em adicionar, tentamos adicionar aqui
     if(document.getElementById('inMedProd').value && document.getElementById('inMedQty').value) addDynamicItem('med');
     if(document.getElementById('inVacProd').value && document.getElementById('inVacQty').value) addDynamicItem('vac');
-    
     document.getElementById('report-text').textContent = getReportText();
     navTo('preview');
 }
@@ -491,7 +536,7 @@ function exportAvicontrolJSON() {
         mortalidade: { quantidade: parseInt(r.morte.qty) || 0, zero_confirmado: r.morte.isZero, observacao: r.morte.obs },
         rececao_stock: {
             racao_sacos: parseFloat(r.stock.racaoSacos) || 0, racao_peso_saco: parseFloat(r.stock.racaoPeso) || 50,
-            serradura_sacos: parseFloat(r.stock.serrSacos) || 0, carvao_sacos: parseFloat(r.stock.carvSacos) || 0, agua_litros: parseFloat(r.stock.aguaLitros) || 0,
+            serradura_sacos: parseFloat(r.stock.serrSacos) || 0, carvao_sacos: parseFloat(r.stock.carvSacos) || 0,
             medicamentos: r.meds.items || [], vacinas: r.vacinas.items || []
         },
         vendas: r.vendas.ativo ? { cliente: r.vendas.cliente, qtd: parseInt(r.vendas.qty) || 0 } : null,
@@ -529,7 +574,7 @@ function renderHistory() {
 function editHistory(id) { const rep = state.history.find(h => h.id === id); if (rep) { state.currentReport = JSON.parse(JSON.stringify(rep)); navTo('form'); } }
 function deleteHistory(id) { if (confirm('Eliminar?')) { state.history = state.history.filter(h => h.id !== id); saveToStorage(); renderHistory(); showToast('Eliminado.'); } }
 function exportData() { const dataStr = JSON.stringify(state, null, 2); const blob = new Blob([dataStr], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `backup_capoeira_${new Date().toISOString().split('T')[0]}.json`; a.click(); URL.revokeObjectURL(url); showToast('Backup exportado.'); }
-function importData() { /* Lógica de importação de backup mantida igual */ }
+function importData() { /* Mantido igual */ }
 function clearAllData() { if (confirm('ATENÇÃO: Apagar TUDO?')) { localStorage.clear(); state = { view: 'dashboard', currentReport: null, history: [], customMeds: [], customVacs: [], customClients: [], defaultWorker: '', defaultCapoeira: '', defaultLote: '', pin: '' }; currentPinMode = 'setup'; updateAuthUI(); navTo('auth'); } }
 function formatDate(isoStr) { if (!isoStr) return ''; const p = isoStr.split('-'); return `${p[2]}/${p[1]}/${p[0]}`; }
 function showToast(msg, isError = false) { const t = document.getElementById('toast'); t.textContent = msg; t.className = isError ? 'show error' : 'show'; setTimeout(() => t.classList.remove('show', 'error'), 3000); }
