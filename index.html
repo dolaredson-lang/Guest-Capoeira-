@@ -86,7 +86,7 @@
     .dynamic-item-info strong { display: block; font-size: 15px; color: var(--primary-dark); margin-bottom: 2px; }
 
     /* Preview */
-    .preview-box { background: var(--bg); border: 1px solid var(--border); padding: 20px; border-radius: var(--radius); font-family: "Courier New", Courier, monospace; font-size: 14px; white-space: pre-wrap; margin-bottom: 20px; color: var(--text); line-height: 1.6; }
+    .preview-box { background: #fff; border: 1px solid var(--border); padding: 20px; border-radius: var(--radius); font-family: "Courier New", Courier, monospace; font-size: 14px; white-space: pre-wrap; margin-bottom: 20px; color: var(--text); line-height: 1.6; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
 
     /* Menus */
     .menu-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
@@ -142,8 +142,8 @@
     <!-- DASHBOARD -->
     <div id="view-dashboard" class="view">
         <div class="card" style="background: var(--primary-light); border: none;">
-            <h2 style="margin-top:0; color:var(--primary-dark); font-size: 20px;">Olá, Trabalhador</h2>
-            <p class="text-muted" style="color: var(--primary); margin-bottom: 0;">Registe a mortalidade e a entrada de material na capoeira.</p>
+            <h2 style="margin-top:0; color:var(--primary-dark); font-size: 20px;">Olá, <span id="dashWorkerName">Trabalhador</span></h2>
+            <p class="text-muted" style="color: var(--primary); margin-bottom: 0;">Registe a mortalidade e a entrada de stock.</p>
         </div>
         <div class="menu-grid">
             <button class="menu-btn" onclick="startNewReport()">
@@ -393,7 +393,12 @@ function navTo(viewId) {
     if (viewId === 'dashboard' || viewId === 'auth') document.getElementById('btnHome').classList.add('hidden'); 
     else document.getElementById('btnHome').classList.remove('hidden'); 
     if (viewId === 'history') renderHistory(); 
-    if (viewId === 'dashboard') populateDatalists(); 
+    if (viewId === 'dashboard') {
+        populateDatalists(); 
+        // Atualiza o nome no Dashboard
+        const nameEl = document.getElementById('dashWorkerName');
+        if (nameEl) nameEl.textContent = state.defaultWorker || 'Trabalhador';
+    } 
     if (viewId === 'form' && state.currentReport) fillForm(); 
     if (viewId !== 'auth') window.scrollTo(0, 0); 
 }
@@ -493,29 +498,50 @@ function removeDynamicItem(type, id) { if (type === 'med') state.currentReport.m
 
 function getReportText() {
     const r = state.currentReport; if(!r) return '';
-    let t = `*RELATÓRIO DIÁRIO — CAPOEIRA*\n\nData: ${formatDate(r.date)}\nTrabalhador: ${r.worker || '(N/I)'}\nCapoeira: ${r.capoeira || '(N/I)'}\nLote: ${r.lote || '(N/I)'}\n\n`;
-    let secao = [];
     
+    // Cabeçalho Profissional
+    let t = `🐔 *RELATÓRIO DIÁRIO — CAPOEIRA*\n\n`;
+    t += `📅 *Data:* ${formatDate(r.date)}\n`;
+    t += `👷 *Trabalhador:* ${r.worker || '(N/I)'}\n`;
+    t += `🏠 *Capoeira:* ${r.capoeira || '(N/I)'}\n`;
+    t += `🏷️ *Lote:* ${r.lote || '(N/I)'}\n`;
+    t += `──────────────────\n\n`;
+    
+    // Mortalidade
     if (r.morte.isZero || (r.morte.qty && r.morte.qty !== '0')) {
-        let str = `Mortalidade: ${r.morte.qty || 0} frangos`;
+        let str = `💀 *Mortalidade:* ${r.morte.qty || 0} frangos`;
         if (r.morte.isZero) str += ` (Sem mortalidade)`;
-        if (r.morte.obs) str += ` [${r.morte.obs}]`;
-        secao.push(str);
-    } else { secao.push(`Mortalidade: (Por preencher)`); }
+        if (r.morte.obs) str += `\n   ↳ _${r.morte.obs}_`;
+        t += str + '\n\n';
+    } else { 
+        t += `💀 *Mortalidade:* (Por preencher)\n\n`; 
+    }
 
+    // Stock (Receção)
     let stockStr = [];
-    if (r.stock.racaoSacos > 0) stockStr.push(`   • Ração: ${r.stock.racaoSacos} sacos de ${r.stock.racaoPeso}kg`);
-    if (r.stock.serrSacos > 0) stockStr.push(`   • Serradura: ${r.stock.serrSacos} sacos`);
-    if (r.stock.carvSacos > 0) stockStr.push(`   • Carvão: ${r.stock.carvSacos} sacos`);
-    if (r.meds.items && r.meds.items.length > 0) r.meds.items.forEach(i => stockStr.push(`   • ${i.prod}: ${i.qty} ${i.unit}`));
-    if (r.vacinas.items && r.vacinas.items.length > 0) r.vacinas.items.forEach(i => stockStr.push(`   • Vacina ${i.prod}: ${i.qty} doses`));
+    if (r.stock.racaoSacos > 0) stockStr.push(`   🌾 Ração: ${r.stock.racaoSacos} sacos de ${r.stock.racaoPeso}kg`);
+    if (r.stock.serrSacos > 0) stockStr.push(`   🪵 Serradura: ${r.stock.serrSacos} sacos`);
+    if (r.stock.carvSacos > 0) stockStr.push(`   🔥 Carvão: ${r.stock.carvSacos} sacos`);
+    if (r.meds.items && r.meds.items.length > 0) r.meds.items.forEach(i => stockStr.push(`   💊 ${i.prod}: ${i.qty} ${i.unit}`));
+    if (r.vacinas.items && r.vacinas.items.length > 0) r.vacinas.items.forEach(i => stockStr.push(`   💉 Vacina ${i.prod}: ${i.qty} doses`));
 
-    if (stockStr.length > 0) secao.push(`Entrada de Stock:\n` + stockStr.join('\n'));
+    if (stockStr.length > 0) {
+        t += `📦 *ENTRADA DE STOCK:*\n`;
+        t += stockStr.join('\n') + '\n\n';
+    }
 
-    if (r.vendas.ativo && r.vendas.qty && r.vendas.qty !== '0') secao.push(`Vendas: ${r.vendas.qty} aves ${r.vendas.cliente ? '(Cliente: '+r.vendas.cliente+')' : ''}`);
+    // Vendas
+    if (r.vendas.ativo && r.vendas.qty && r.vendas.qty !== '0') {
+        let str = `💰 *Vendas:* ${r.vendas.qty} aves`;
+        if (r.vendas.cliente) str += `\n   ↳ Cliente: ${r.vendas.cliente}`;
+        t += str + '\n\n';
+    }
 
-    secao.forEach((s, idx) => { t += `${idx + 1}. ${s}\n`; });
-    t += `\nObservações: ${r.obsGeral || 'Sem observações'}\n`;
+    // Observações
+    if (r.obsGeral) {
+        t += `📝 *Observações Gerais:*\n${r.obsGeral}\n`;
+    }
+    
     return t;
 }
 
