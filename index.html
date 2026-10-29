@@ -605,6 +605,115 @@ function clearAllData() { if (confirm('ATENÇÃO: Apagar TUDO?')) { localStorage
 function formatDate(isoStr) { if (!isoStr) return ''; const p = isoStr.split('-'); return `${p[2]}/${p[1]}/${p[0]}`; }
 function showToast(msg, isError = false) { const t = document.getElementById('toast'); t.textContent = msg; t.className = isError ? 'show error' : 'show'; setTimeout(() => t.classList.remove('show', 'error'), 3000); }
 init();
+// ════════════════════════════════════════════════════════════════════════════
+// AVICONTROL — v17: MODO TRABALHADOR (Mobile First / Limpo)
+// ════════════════════════════════════════════════════════════════════════════
+
+var styleWorker = document.createElement('style');
+styleWorker.innerHTML = `
+  /* Quando o trabalhador entra, a app fica no modo "telemóvel" */
+  body.role-campo .sidebar { display: none !important; }
+  body.role-campo .main { width: 100vw !important; }
+  body.role-campo .header { display: none !important; }
+  body.role-campo .content { padding: 10px !important; }
+  
+  /* Esconde outras páginas para o trabalhador não se perder */
+  body.role-campo #page-dashboard,
+  body.role-campo #page-lotes,
+  body.role-campo #page-racao,
+  body.role-campo #page-mortalidade,
+  body.role-campo #page-peso,
+  body.role-campo #page-despesas,
+  body.role-campo #page-vendas,
+  body.role-campo #page-analises,
+  body.role-campo #page-relatorios,
+  body.role-campo #page-inteligente,
+  body.role-campo #page-exploracao,
+  body.role-campo #page-planeamento,
+  body.role-campo #page-calendario,
+  body.role-campo #page-protocolos,
+  body.role-campo #page-saudeop,
+  body.role-campo #page-aprender,
+  body.role-campo #page-saude { 
+      display: none !important; 
+  }
+
+  /* Barra superior simples para o trabalhador */
+  #workerTopBar {
+    display: none;
+    background: var(--surface);
+    padding: 15px;
+    border-bottom: 1px solid var(--border);
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  body.role-campo #workerTopBar { display: flex; }
+  
+  /* Botão de sair */
+  .btn-sair-worker {
+    background: var(--red);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  /* Esconder botão de importar JSON antigo */
+  body.role-campo .btn-import-json { display: none !important; }
+`;
+
+document.head.appendChild(styleWorker);
+
+// Adicionar a Barra Superior do Trabalhador no HTML (se não existir)
+if (!document.getElementById('workerTopBar')) {
+    var mainContent = document.querySelector('.main');
+    if (mainContent) {
+        mainContent.insertAdjacentHTML('afterbegin', `
+          <div id="workerTopBar">
+            <div style="font-weight:bold; font-size:16px; color:var(--accent);">🐔 AVICONTROL - Campo</div>
+            <button class="btn-sair-worker" onclick="localStorage.removeItem('avi_sessao_atual'); window.location.reload();">Sair</button>
+          </div>
+        `);
+    }
+}
+
+// Intercetar a aplicação de permissões
+var oldAplicarPermissoesV17 = window.aplicarPermissoes;
+window.aplicarPermissoes = function(role, nome) {
+    if (oldAplicarPermissoesV17) oldAplicarPermissoesV17(role, nome);
+    
+    if (role === 'campo') {
+        // Adiciona a classe mágica que ativa o CSS acima
+        document.body.classList.add('role-campo');
+        
+        // Força a abertura do Diário de Campo automaticamente
+        setTimeout(function() {
+            var diarioMenuBtn = Array.from(document.querySelectorAll('.nav-item')).find(el => el.innerText.includes('Diário de Campo'));
+            if (diarioMenuBtn) {
+                diarioMenuBtn.click();
+            } else {
+                showPage('ficha', null);
+            }
+        }, 100);
+    } else {
+        document.body.classList.remove('role-campo');
+    }
+};
+
+// Se o utilizador já estiver logado ao carregar a página, aplica o modo correto
+if (typeof sessao !== 'undefined' && sessao) {
+    if (sessao.role === 'campo') {
+        document.body.classList.add('role-campo');
+        setTimeout(function() {
+            showPage('ficha', null);
+        }, 100);
+    }
+}
+
+console.log('%c[AVICONTROL] Modo Trabalhador v17 ativado!', 'color:#22c55e; font-weight:bold;');
 </script>
 </body>
 </html>
